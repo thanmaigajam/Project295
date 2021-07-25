@@ -8,8 +8,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Navbar></Navbar>
         <Router history={history}>
+          <Navbar></Navbar>
           <Routes />
           {/* <h1>Covid Symptom Checker</h1> */}
         </Router>

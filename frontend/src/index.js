@@ -1,8 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core";
+import teal from "@material-ui/core/colors/teal";
+import purple from "@material-ui/core/colors/purple";
+import green from "@material-ui/core/colors/green";
+// import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./App";
-// import reportWebVitals from './reportWebVitals';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: purple,
+    secondary: purple,
+    // secondary: {
+    //   main: "#f44336",
+    // },
+    // accent: green,
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
