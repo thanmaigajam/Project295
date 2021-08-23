@@ -190,7 +190,7 @@ export default function Navbar(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            Covid Healthcare
+            Know your brand's social media presence
           </Typography>
           <div className={classes.grow} />
           {/* {!!props?.auth ? (
@@ -233,7 +233,7 @@ export default function Navbar(props) {
               <ListItemIcon>
                 <CalendarTodayIcon />
               </ListItemIcon>
-              <ListItemText primary="Symptom Checker" />
+              <ListItemText primary="Dashboard" />
             </ListItem>
           </Link>
           <Divider />

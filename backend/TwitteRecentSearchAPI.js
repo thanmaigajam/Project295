@@ -16,8 +16,9 @@ async function getRequest() {
   // specify a search query, and any additional fields that are required
   // by default, only the Tweet ID and text fields are returned
   const params = {
-    query: "Covid",
+    query: "Starbucks",
     "tweet.fields": "author_id",
+    max_results: 10,
   };
 
   const res = await needle("get", endpointUrl, params, {
@@ -28,6 +29,7 @@ async function getRequest() {
   });
 
   if (res.body) {
+    console.log(res.body);
     return res.body;
   } else {
     throw new Error("Unsuccessful request");
@@ -38,9 +40,10 @@ async function getRequest() {
   try {
     // Make request
     const response = await getRequest();
-    console.dir(response, {
-      depth: null,
-    });
+    console.log("Tweet count = ", response.data.length);
+    // console.dir(response, {
+    //   depth: null,
+    // });
   } catch (e) {
     console.log(e);
     process.exit(-1);
