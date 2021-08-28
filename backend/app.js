@@ -12,22 +12,49 @@ const port = 8080;
 module.exports = app.listen(port)
 console.log("sever listening on",`${port}`);
 
-// const getReviews = app.get('http://127.0.0.1:5000/helloworld').then((res) =>{
-//   return res.data;
-// })
-// .catch((ex) => {
-//   console.log(ex)
-// })
+app.get('/getreviews_reddit', async function(request,response){
+  console.log("inside get reviews_reddit")
 
-app.get('/getreviews_twitter', async function(request,response){
-  console.log("inside get reviews_twitter")
-
-  await axios.get('http://127.0.0.1:5000/getreviews_reddit').then((res) =>{
+  await axios.get('http://127.0.0.1:5000/getreviews_reddit?limitval='+request.query.limitval).then((res) =>{
     console.log(res.data)
     response.send(res.data);
   })
   .catch((ex) =>
   {
+    console.log(ex)
+  })
+
+})
+
+app.get('/getreviews_yelp',async function(request,response)
+{
+  console.log("inside yelp reviews")
+  await axios.get('http://127.0.0.1:5000/getreviews_yelp?term='+request.query.term+'&location='+request.query.location).then((res) =>
+  {
+    console.log(res.data)
+response.send(res.data+"from yelp");
+  })
+  .catch(ex =>
+    {
+      console.log(ex)
+
+    })
+  
+})
+
+app.get('/getreviews_twitter', async function(request,response)
+{
+  console.log("inside twitter reviews")
+  const params = {
+    query: "Starbucks",
+    "tweet.fields": "author_id",
+    max_results: 10,
+  };
+  await axios.get('http://127.0.0.1:5000/getreviews_twitter?query='+request.query.query+'&tweet.fields='+request.query.tweets+'&max_results='+request.query.max_results).then((res) =>{
+    console.log(res.data)
+    response.send(res.data+"from twitter")
+  })
+  .catch(ex =>{
     console.log(ex)
   })
 
