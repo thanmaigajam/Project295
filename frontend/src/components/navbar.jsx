@@ -74,6 +74,8 @@ import GroupIcon from "@material-ui/icons/Group";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ListItemText from "@material-ui/core/ListItemText";
 import RoomIcon from "@material-ui/icons/Room";
+import HomePage from "./homepage";
+
 // import BeenhereIcon from "@material-ui/icons/Beenhere";
 
 const drawerWidth = 240;
@@ -168,8 +170,12 @@ export default function Navbar(props) {
 
   const handleLogin = async () => {};
 
-  return (
+  return ( 
+      
+   
     <div className={classes.root}>
+   
+     
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -177,6 +183,7 @@ export default function Navbar(props) {
           [classes.appBarShift]: open,
         })}
       >
+
         <Toolbar>
           <IconButton
             color="inherit"
@@ -204,6 +211,7 @@ export default function Navbar(props) {
           )} */}
         </Toolbar>
       </AppBar>
+      
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -226,9 +234,10 @@ export default function Navbar(props) {
             )}
           </IconButton>
         </div>
+
         <Divider />
         <List>
-          <Link className="remove-link-style" to="/covidSymptomChecker">
+          <Link className="remove-link-style" to="/homepage">
             <ListItem button key="Groups">
               <ListItemIcon>
                 <CalendarTodayIcon />
@@ -247,6 +256,14 @@ export default function Navbar(props) {
           </Link>
         </List>
       </Drawer>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        
+        <div className="route-container">
+        <Route path="/homepage" component={HomePage} />
+
+          </div>
+          </main>
     </div>
   );
 }

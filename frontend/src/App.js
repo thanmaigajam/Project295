@@ -3,17 +3,13 @@ import Routes from "./Routes";
 import { Router } from "react-router-dom";
 import { history } from "./utils/history";
 import Navbar from "./components/navbar";
+import CovidSymptomChecker from "./components/covid-symptom-checker";
+import HomePage from "./components/homepage";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <Router history={history}>
-          <Navbar></Navbar>
-          <Routes />
-          {/* <h1>Covid Symptom Checker</h1> */}
-        </Router>
-      </header>
+       <Routes/>
     </div>
   );
 }
