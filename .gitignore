@@ -5,6 +5,9 @@
 /backend/node_modules/
 /.pnp
 .pnp.js
+/flaskend/node_modules
+/flaskend/config.json
+/flaskend/sample.py
 
 # testing
 /coverage
