@@ -5,6 +5,7 @@ from flask_pymongo import PyMongo
 from flask_restful import Api, Resource, abort, reqparse
 import json
 import time
+import certifi
 
 from werkzeug.datastructures import Authorization
 app = Flask(__name__)
@@ -132,9 +133,9 @@ def get_textBlob_score(sent):
 def processing(df_title):
     print("df_title in processing")
     print(df_title.head())
-    df_title.title[df_title.title.str.match(pat = '(https)|(http)|(www.)',na = False)]
+    df_title.text[df_title.text.str.match(pat = '(https)|(http)|(www.)',na = False)]
     de_emotext = []
-    for text in df_title.title:
+    for text in df_title.text:
         text = deEmojify(text)
         de_emotext.append(text)
 
@@ -283,23 +284,43 @@ def processing(df_title):
         elif (value >0.5):
             ratings.append(2)
         else: ratings.append(1)
-    
-    Most_positive_sentences = df_full.nlargest(5, 'sentiment_scores')['title']
+
+    print("ratings----------------------------------------")
+    print(ratings)
+    Most_positive_sentences = df_full.nlargest(5, 'sentiment_scores')['text']
     for i in range(len(Most_positive_sentences.index)):
-        print(i,") ",df_full.iloc[Most_positive_sentences.index[i]]['title'])
+        print(i,") ",df_full.iloc[Most_positive_sentences.index[i]]['text'])
     print("Most_positive_sentences --------------------------", Most_positive_sentences)
 
-    Most_negative_sentences = df_full.nsmallest(5, 'sentiment_scores')['title']
+    Most_negative_sentences = df_full.nsmallest(5, 'sentiment_scores')['text']
     for i in range(len(Most_negative_sentences.index)):
-        print(i,") ",df_full.iloc[Most_negative_sentences.index[i]]['title'])
+        print(i,") ",df_full.iloc[Most_negative_sentences.index[i]]['text'])
     print("Most_negative_sentences --------------------------", Most_negative_sentences)
+    # PYMONGO CONNECTION
+    client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
+    db = client.db
+    print(db)
+    # db = client
+    # Most_negative_sentences_list = Most_negative_sentences.tolist()
+    review_data = {"name":"Starbucks",
+    "requestId": "123456",
+    "negativeSentences": Most_negative_sentences.tolist(),
+    "positiveSentences": Most_positive_sentences.tolist(),
+    "ratings": ratings}
+    try:
+        dbres = db.twitterreviews.insert_one(review_data)
+        for attr in dir(dbres):
+            print(attr)
+    except Exception as ex:
+        print(ex)
+    # return {"data":"success sent to database"} 
 
 def getReditData(res1):
     df_title = pd.DataFrame()
     for post in res1.json()['data']['children']:
         df_title = df_title.append({
             # 'subeddit':post['data']['subreddit'],
-            'title':post['data']['title'],
+            'text':post['data']['title'],
             # 'selftext':post['data']['selftext'],
             # 'upvote_ratio':post['data']['upvote_ratio'],
             # 'ups':post['data']['ups'],
@@ -330,7 +351,7 @@ def getYelpData(result):
         for post in result.json()['reviews']:
             df_reviews = df_reviews.append({
                 'text':post['text'],
-                'rating': post['rating']
+                # 'rating': post['rating']
             },ignore_index=True)
     return df_reviews
     
@@ -339,7 +360,7 @@ def getTwitterData(results):
     df_tweet = pd.DataFrame()
     for post in results.json()['data']:
         df_tweet = df_tweet.append({
-            'test':post['text'], 
+            'text':post['text'], 
         }, ignore_index = True)
     print(df_tweet.head())
     return df_tweet
@@ -355,10 +376,14 @@ def get_processed_data():
     data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=Starbucks&tweet.fields=author_id&max_results=10")
     twitter_df = getTwitterData(data_twitter)
 
-    frames = [df1, df2, df3]
-    result = pd.concat(frames)
-
-    return data_twitter.json()
+    frames = [reddit_df, yelp_df, twitter_df]
+    combined_data_df = pd.concat(frames)
+    print("combined_data_df.head()=---------------------------------------------------------")
+    print(combined_data_df.head())
+    # print(combined_data_df.describe())
+    processing(combined_data_df)
+    # return data_twitter.json()
+    return {"data":"success sent to database"}
 
 @app.route('/getreviews_reddit/')
 def get_redditreviews():
@@ -367,21 +392,19 @@ def get_redditreviews():
     headers = {'Authorization': TOKEN,'User-Agent': 'MyAPI/0.0.1' }
     res1 = requests.get('https://oauth.reddit.com/r/starbucks/hot?limit='+request.args.get('limitval'), headers=headers)
     return res1.json()
-     
-
-# # PYMONGO CONNECTION
-#     client = PyMongo(app,uri = config_data['mongodb_config'])
-#     db = client.db
-#     print(db)
-#     # db = client
-#     review_data = {"name":"Prasanna","review":"Starbucks is amazing"}
-#     try:
-#         dbres = db.twitterreviews.insert_one(review_data)
-#         for attr in dir(dbres):
-#             print(attr)
-#     except Exception as ex:
-#         print(ex)
-#     return {"data":"success sent to database"} 
+    # # PYMONGO CONNECTION
+    # client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
+    # db = client.db
+    # print(db)
+    # # db = client
+    # review_data = {"name":"Thanmai","review":"Starbucks is amazing"}
+    # try:
+    #     dbres = db.twitterreviews.insert_one(review_data)
+    #     for attr in dir(dbres):
+    #         print(attr)
+    # except Exception as ex:
+    #     print(ex)
+    # return {"data":"success sent to database"} 
 
     
 
