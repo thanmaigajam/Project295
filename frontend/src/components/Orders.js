@@ -71,7 +71,7 @@ class Orders extends Component
     componentDidMount()
     {
         axios
-        .get(`${backendServer}/twitter/`)
+        .get(`${backendServer}/twitter`)
         .then((response) => {
           console.log("Pro are::", response.data);
           this.setState({

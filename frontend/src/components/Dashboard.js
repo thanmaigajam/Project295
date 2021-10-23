@@ -22,9 +22,7 @@ import Chart from './TopicRating';
 import Deposits from './Donut';
 import Orders from './Orders';
 import Navbar from './navbar';
-import * as d3 from "d3";
 
-import Plotly from 'plotly.js';
 
 function Copyright(props) {
   return (

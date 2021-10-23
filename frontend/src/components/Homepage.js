@@ -2,15 +2,18 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-import Navbar from "./navbar"
 
+class HomePage extends React.Component {
+  constructor(props) {
+    super(props);
 
-class HomePage extends Component{
+  }
+
   render() {
-
-  return (
-    <div>
-      <Navbar/>
+    return (
+      <React.Fragment>
+        <div style = {{marginTop : "100px"}}>
+         
           <Link to="/dashboard" className="remove-link-style ml-3">
             <Button variant="outlined" color="primary">
               Twitter Reviews
@@ -32,10 +35,11 @@ class HomePage extends Component{
               Reddit Reviews
             </Button>
           </Link>
-            </div>
-        
-  );
-}
+        </div>
+      
+      </React.Fragment>
+    );
+  }
 }
 
 export default HomePage;

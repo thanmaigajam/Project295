@@ -7,7 +7,7 @@ class YelpReviews extends Component
         super(props);
     }
     render(){
-        return <div>Welcome to yelp reviews</div>
+        return <div style = {{marginBottom : "200px"}}>Welcome to yelp reviews</div>
     }
 }
 export default YelpReviews;

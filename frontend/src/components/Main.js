@@ -7,7 +7,7 @@ import TweetReviews from "./tweet_reviews";
 import Dashboard from "./Dashboard";
 import Signup from "./Signup";
 import Login from "./Login";
-import HomePage from "./Homepage";
+import HomePage from "./homepage";
 import Sample from "./Sample";
 
 class Routes extends Component {
@@ -16,13 +16,15 @@ class Routes extends Component {
       <div>
         {localStorage.getItem("token") && (
           <Fragment>
-            <Route exact path="/" component={Login} />
+            <Navbar></Navbar>
+            <Route path="/homepage" component={HomePage}/>
+
+            {/* <Route exact path="/" component={Login} /> */}
             <Route path="/dashboard" component={Dashboard}/>
             <Route path="/sample" component={Sample}/>
             <Route path="/covidSymptomChecker" component={CovidSymptomChecker} />
             <Route path="/yelp_reviews" component={YelpReviews}/>
             <Route path="/twitter_reviews" component={TweetReviews}/>
-            <Route path="/homepage" component={HomePage}/>
 
 
           </Fragment>

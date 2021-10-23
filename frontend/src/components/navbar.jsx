@@ -103,8 +103,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
-  },
+    marginRight: 36  },
   hide: {
     display: "none",
   },
@@ -173,7 +172,7 @@ export default function Navbar(props) {
   return ( 
       
    
-    <div className={classes.root}>
+    <div className={classes.root} style ={{marginBottom : "50px"}}>
    
      
       <CssBaseline />
@@ -256,14 +255,14 @@ export default function Navbar(props) {
           </Link>
         </List>
       </Drawer>
-      <main className={classes.content}>
+      {/* <main className={classes.content}>
         <div className={classes.toolbar} />
         
         <div className="route-container">
         <Route path="/homepage" component={HomePage} />
 
           </div>
-          </main>
+          </main> */}
     </div>
   );
 }
