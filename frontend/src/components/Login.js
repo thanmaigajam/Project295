@@ -43,7 +43,7 @@ export default function Login() {
   }
 
   return (
-   <div>
+   <div style= {{marginTop:"50px"}}>
        <Navbar></Navbar>
 <Container
       className="d-flex align-items-center justify-content-center"

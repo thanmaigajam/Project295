@@ -32,7 +32,7 @@ export default function Signup() {
     createUserWithEmailAndPassword(auth,Email,Password)
     .then(() => {
         updateProfile(auth.currentUser,{displayName : Name})
-        .then(() => history.push('/login'))
+        .then(() => history.push('/'))
         .catch((e) => alert(e.message))
          
     }).catch((e) => alert(e.message))
@@ -54,7 +54,7 @@ export default function Signup() {
   }
 
   return (
-      <div>
+      <div style = {{marginTop : "80px"}}>
           <Navbar></Navbar>
     <Container
       className="d-flex align-items-center justify-content-center"
@@ -86,7 +86,7 @@ export default function Signup() {
         </Card.Body>
       </Card>
       <div className="w-100 text-center mt-2">
-        Already have an account? <Link to="/login">Log In</Link>
+        Already have an account? <Link to="/">Log In</Link>
       </div>
     </div>
     </Container>
