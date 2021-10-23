@@ -22,6 +22,9 @@ import Chart from './TopicRating';
 import Deposits from './Donut';
 import Orders from './Orders';
 import Navbar from './navbar';
+import LineGraph from './LineGraph';
+import ChoroplethMap from './ChoroplethMap';
+import Title from './Title';
 
 
 function Copyright(props) {
@@ -85,6 +88,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
+ const datachoropleth = [
+    ["TX", 75], ["CA", 43], ["VA", 50], ["IL", 88],["OH",49]]
 
 
 function DashboardContent() {
@@ -137,19 +142,45 @@ function DashboardContent() {
               <Grid item xs={12}>
                 <Paper
                   sx={{
-                    p: 2,
+                    
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 500,
+                    
                   }}
                 >
                   <Orders />
                 </Paper>
               </Grid>
-             
+
+
+            
+       
+           
+
+            <Grid item xs={12}>
+            <Paper
+                  sx={{
+                    flexDirection: 'column',
+                    display:'flex',
+                    height: 400
+                  }}
+                >
+        <ChoroplethMap  data={datachoropleth}/>
+      </Paper>
+    
             </Grid>
-            <Grid>
-              
+
+            <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                  }}
+                >
+                  <LineGraph />
+                </Paper>
+              </Grid>
             </Grid>
             </Container>
             </div>

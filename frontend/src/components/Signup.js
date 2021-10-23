@@ -3,11 +3,13 @@ import { Form, Button, Card, Alert } from "react-bootstrap"
 import { Link, useHistory } from "react-router-dom"
 import { Container } from "react-bootstrap"
 import Navbar from "./navbar"
-
+import axios from "axios";
+import {backendServer} from "../webConfig.js"
 import {getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 export default function Signup() {
   const [Name, setName] = useState("")
   const [Email, setEmail] = useState("")
+  const [Brand, setBrand] = useState("")
   const [Password, setPassword] = useState("")
   const emailRef = useRef()
   const passwordRef = useRef()
@@ -27,7 +29,7 @@ export default function Signup() {
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true);
-    console.log(Name,Email,Password)
+    console.log(Name,Email,Password,Brand)
     const auth = getAuth();
     createUserWithEmailAndPassword(auth,Email,Password)
     .then(() => {
@@ -35,7 +37,23 @@ export default function Signup() {
         .then(() => history.push('/'))
         .catch((e) => alert(e.message))
          
-    }).catch((e) => alert(e.message))
+    })
+    .then(() => {
+      const data = {
+        rname:Name,
+        remail:Email,
+        rpassword: Password,
+        rbrand:Brand
+      };
+
+      axios
+      .post(`${backendServer}/register`,data)
+      .then((response) => {
+        console.log( response.data);
+        localStorage.setItem('brand',Brand);
+      });
+    })
+    .catch((e) => alert(e.message))
     .finally(() => setLoading(false))
     // if (passwordRef.current.value !== passwordConfirmRef.current.value) {
     //   return setError("Passwords do not match")
@@ -73,6 +91,10 @@ export default function Signup() {
             <Form.Group id="Email" style={{paddingTop:"10px"}}>
               <Form.Label>Email</Form.Label>
               <Form.Control type="Email" value={Email} onChange={e => setEmail(e.target.value)} name="Email" required />
+            </Form.Group>
+            <Form.Group id="Brand" style={{paddingTop:"10px"}}>
+              <Form.Label>Brand Name</Form.Label>
+              <Form.Control type="Brand" value={Brand} onChange={e => setBrand(e.target.value)} name="Brand" required />
             </Form.Group>
             <Form.Group id="password" style={{paddingBottom:"10px",paddingTop:"10px"}} >
               <Form.Label>Password</Form.Label>

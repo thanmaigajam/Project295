@@ -92,5 +92,9 @@ app.get("/getreviews_twitter", async function (request, response) {
 });
 
 var twitterRouter = require("./api/twitter/twitter.router");
+var registerRouter = require("./api/register/register.router");
+var loginRouter = require("./api/login/login.router");
 app.use("/twitter", twitterRouter);
+app.use("/register",registerRouter);
+app.use("/login",loginRouter);
 

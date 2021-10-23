@@ -4,8 +4,6 @@ const {
     gettwitterdata
 } = require("./twitter.controller");
 
-
-
-router.get("/", gettwitterdata);
+router.get("/:brandname", gettwitterdata);
 
 module.exports = router;

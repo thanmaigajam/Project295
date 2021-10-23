@@ -3,7 +3,11 @@ import { Form, Button, Card, Alert } from "react-bootstrap"
 import { Link, useHistory } from "react-router-dom"
 import { Container } from "react-bootstrap"
 import { getAuth, signInWithEmailAndPassword } from "@firebase/auth"
-import Navbar from "./navbar"
+import Navbar from "./navbar";
+import {backendServer} from "../webConfig.js"
+import axios from "axios";
+
+
 export default function Login() {
   
   
@@ -26,23 +30,41 @@ export default function Login() {
     const auth = getAuth()
     signInWithEmailAndPassword(auth,Email,Password)
     .then((userCredential) => {
-        localStorage.setItem('token',userCredential._tokenResponse.idToken);
-        window.location.href = "/homepage";
+      localStorage.setItem('token',userCredential._tokenResponse.idToken);
+    })
+    .then(() =>
+    {
+      const data = {
+        email : Email
+      }
+      axios
+      .post(`${backendServer}/login/`, data)
+      .then((response) => {
+        console.log("reulst login",response.data)
 
-    }).catch((e) => alert(e.message))
-    .finally(() => setLoading(false))
-    // try {
-    //   setError("")
-    //   await login(emailRef.current.value, passwordRef.current.value)
-    //   history.push("/")
-    // } catch {
-    //   setError("Failed to log in")
+        localStorage.setItem('brand',response.data.brandname);
+    })
+    // if(localStorage.getItem('brand'))
+    // {
+    //   window.location.href = '/homepage';
     // }
+    })
+    .catch((e) => alert(e.message))
+    .finally(() => {
+      setLoading(false)
+      if(localStorage.getItem('brand'))
+      {
+        window.location.href = '/homepage';
+      }
+     
+ }
+    )
 
     setLoading(false)
   }
 
   return (
+    
    <div style= {{marginTop:"50px"}}>
        <Navbar></Navbar>
 <Container

@@ -16,6 +16,7 @@ class TopicRating extends Component {
     this.state = {
       options : { maintainAspectRatio: false },
       topicsAndRatings : [],
+      brandname : localStorage.getItem("brand")
     }
 
   }
@@ -23,8 +24,8 @@ class TopicRating extends Component {
   componentDidMount()
   {
     axios
-    .get(`${backendServer}/twitter/`)
-    .then((response) => {
+    .get(`${backendServer}/twitter/${this.state.brandname}`)
+    .then((response,error) => {
       console.log("Pro are::", response.data);
       this.setState({
         topicsAndRatings : response.data[0].topicsAndRatings
