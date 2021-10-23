@@ -303,17 +303,34 @@ def processing(df_title):
     # db = client
     # Most_negative_sentences_list = Most_negative_sentences.tolist()
     review_data = {"name":"Starbucks",
-    "requestId": "123456",
+    "requestId": "2",
     "negativeSentences": Most_negative_sentences.tolist(),
     "positiveSentences": Most_positive_sentences.tolist(),
     "ratings": ratings}
+    insert_id = 0
     try:
         dbres = db.twitterreviews.insert_one(review_data)
+        insert_id = dbres.inserted_id
+        # for attr in dir(dbres):
+        #     print("attr", attr)
+    except Exception as ex:
+        print(ex)
+    print("insert_id ---------------------------", insert_id)
+    return insert_id 
+
+def get_yelp_choropleth_map(yelp_df, insert_id):
+    client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
+    db = client.db
+    choropleth_data = yelp_df['state'].value_counts()
+    choropleth_data_dict = {}
+    for index, value in choropleth_data.items():
+        choropleth_data_dict[index] = (value)
+    try:
+        dbres = db.twitterreviews.update({"_id": insert_id}, {"$set": {"choropleth_data": choropleth_data_dict}})
         for attr in dir(dbres):
             print(attr)
     except Exception as ex:
         print(ex)
-    # return {"data":"success sent to database"} 
 
 def getReditData(res1):
     df_title = pd.DataFrame()
@@ -339,11 +356,13 @@ def getYelpData(result):
     df_reviews = pd.DataFrame()
     for post in result.json()['businesses']:
         df_ids = df_ids.append({
-            'id':post['id']
+            'id':post['id'],
+            'state':post['location']['state']
         },ignore_index=True)
-    print(df_ids['id'].shape[0])
+    # print(df_ids['id'].shape[0])
     for id_val in range(df_ids['id'].shape[0]):
         print(df_ids['id'][id_val])
+        print(df_ids['state'][id_val])
         idval = df_ids['id'][id_val]
         time.sleep(1)
         url = 'https://api.yelp.com/v3/businesses/'+idval+'/reviews'
@@ -351,7 +370,7 @@ def getYelpData(result):
         for post in result.json()['reviews']:
             df_reviews = df_reviews.append({
                 'text':post['text'],
-                # 'rating': post['rating']
+                'state': df_ids['state'][id_val]
             },ignore_index=True)
     return df_reviews
     
@@ -378,12 +397,36 @@ def get_processed_data():
 
     frames = [reddit_df, yelp_df, twitter_df]
     combined_data_df = pd.concat(frames)
-    print("combined_data_df.head()=---------------------------------------------------------")
-    print(combined_data_df.head())
-    # print(combined_data_df.describe())
+
     processing(combined_data_df)
-    # return data_twitter.json()
+
     return {"data":"success sent to database"}
+
+@app.route('/get_processed_data_twitter/')
+def get_processed_data_twitter():
+    data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=Starbucks&tweet.fields=author_id&max_results=10")
+    twitter_df = getTwitterData(data_twitter)
+    processing(twitter_df)
+    return {"data":"Twitter proccesing completed. Successly sent to database"}
+
+@app.route('/get_processed_data_yelp/')
+def get_processed_data_yelp():
+    params = {
+        'term' : request.args.get('term'),
+        'location' : request.args.get('location')
+    }
+    data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?term='+params['term']+'&location='+params['location'])
+    yelp_df = getYelpData(data_yelp)
+    insert_id = processing(yelp_df)
+    get_yelp_choropleth_map(yelp_df, insert_id)
+    return {"data":"Yelp proccesing completed. Successly sent to database"}
+
+@app.route('/get_processed_data_reddit/')
+def get_processed_data_reddit():
+    data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?limitval=36")
+    reddit_df = getReditData(data_reddit)
+    processing(reddit_df)
+    return {"data":"Twitter proccesing completed. Successly sent to database"}
 
 @app.route('/getreviews_reddit/')
 def get_redditreviews():
@@ -418,8 +461,6 @@ def getreviews_yelp():
         'term' : request.args.get('term'),
         'location' : request.args.get('location')
     }
-    # print(request.args.get('term'))
-    # print(request.args.get('location'))
     url = 'https://api.yelp.com/v3/businesses/search?term='+params['term']+'&location='+params['location']
     print(url)
     result = requests.get(url,headers=headers)
@@ -428,17 +469,14 @@ def getreviews_yelp():
 
 @app.route('/getreviews_twitter/')
 def getreviews_twitter():
-    # print(request.args.get("query"))
-    # print(request.args.get("tweet.fields"))
-    # print(request.args.get("max_results"))
     headers = {
       "User-Agent": config_data['twitter']['user_agent'],
       "authorization": 'Bearer '+config_data['twitter']['token']
     }
     params = {
     "query": "Starbucks",
-    "tweet.fields": "author_id",
-    "max_results": 10,
+    "tweet.fields": "geo",
+    "max_results": 100,
     }
     results = requests.get('https://api.twitter.com/2/tweets/search/recent',params,headers=headers)
     return results.json()
