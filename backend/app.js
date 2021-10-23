@@ -4,6 +4,7 @@ var app = express();
 var cors = require("cors");
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.set("view engine", "ejs");
+app.use(express.json());
 var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
@@ -11,6 +12,23 @@ var axios = require("axios");
 const port = 8080;
 module.exports = app.listen(port);
 console.log("sever listening on", `${port}`);
+const { mongoDB } = require("./config/ConnectionValues");
+const mongoose = require("mongoose");
+
+var options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+
+};
+
+mongoose.connect(mongoDB, options, (err, res) => {
+  if (err) {
+    console.log(err);
+    console.log(`MongoDB Connection Failed`);
+  } else {
+    console.log(`MongoDB Connected`);
+  }
+});
 
 app.get("/getreviews_reddit", async function (request, response) {
   console.log("inside get reviews_reddit");
@@ -72,3 +90,7 @@ app.get("/getreviews_twitter", async function (request, response) {
       console.log(ex);
     });
 });
+
+var twitterRouter = require("./api/twitter/twitter.router");
+app.use("/twitter", twitterRouter);
+

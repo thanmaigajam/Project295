@@ -59,7 +59,7 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 import FaceIcon from "@material-ui/icons/Face";
 import LocalMallIcon from "@material-ui/icons/LocalMall";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
-
+import LogoutIcon from '@mui/icons-material/Logout';
 import List from "@material-ui/core/List";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
@@ -103,8 +103,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
-  },
+    marginRight: 36  },
   hide: {
     display: "none",
   },
@@ -158,22 +157,17 @@ export default function Navbar(props) {
     setOpen(false);
   };
 
-  // const handleLogout = async () => {
-  //   firebase
-  //     .auth()
-  //     .signOut()
-  //     .then(() => {
-  //       window.sessionStorage.removeItem("auth");
-  //       window.sessionStorage.clear();
-  //     });
-  // };
+  const handleLogout = async () => {
+   localStorage.clear();
+   window.location.href = "/";
+  };
 
   const handleLogin = async () => {};
 
   return ( 
       
    
-    <div className={classes.root}>
+    <div className={classes.root} style ={{marginBottom : "50px"}}>
    
      
       <CssBaseline />
@@ -185,6 +179,7 @@ export default function Navbar(props) {
       >
 
         <Toolbar>
+        {localStorage.getItem("token") && (
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -196,10 +191,23 @@ export default function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
+        )}
           <Typography variant="h6" noWrap>
             Know your brand's social media presence
           </Typography>
+
           <div className={classes.grow} />
+          {localStorage.getItem("token") && (
+          <IconButton  color="inherit"
+            aria-label="open drawer"
+            onClick={handleLogout}
+            edge="start"
+            className={clsx(classes.menuButton, {
+              [classes.hide]: open,
+            })}>
+            <LogoutIcon/>
+          </IconButton>
+          )}
           {/* {!!props?.auth ? (
             <Button color="inherit" onClick={handleLogout}>
               Logout
@@ -211,7 +219,8 @@ export default function Navbar(props) {
           )} */}
         </Toolbar>
       </AppBar>
-      
+     
+        {localStorage.getItem("token") && (
       <Drawer
         variant="permanent"
         className={clsx(classes.drawer, {
@@ -256,14 +265,15 @@ export default function Navbar(props) {
           </Link>
         </List>
       </Drawer>
-      <main className={classes.content}>
+       )}
+      {/* <main className={classes.content}>
         <div className={classes.toolbar} />
         
         <div className="route-container">
         <Route path="/homepage" component={HomePage} />
 
           </div>
-          </main>
+          </main> */}
     </div>
   );
 }
