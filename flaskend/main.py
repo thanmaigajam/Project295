@@ -5,6 +5,7 @@ from flask_pymongo import PyMongo
 from flask_restful import Api, Resource, abort, reqparse
 import json
 import time
+from datetime import date
 import certifi
 
 from werkzeug.datastructures import Authorization
@@ -67,6 +68,61 @@ from nltk.tokenize.treebank import TreebankWordDetokenizer
 
 from textblob import TextBlob
 
+STATES_ABBREVIATION_MAP = {
+  "AL": "Alabama",
+  "AK": "Alaska",
+  "AZ": "Arizona",
+  "AR": "Arkansas",
+  "CA": "California",
+  "CO": "Colorado",
+  "CT": "Connecticut",
+  "DE": "Delaware",
+  "DC": "District Of Columbia",
+  "FL": "Florida",
+  "GA": "Georgia",
+  "HI": "Hawaii",
+  "ID": "Idaho",
+  "IL": "Illinois",
+  "IN": "Indiana",
+  "IA": "Iowa",
+  "KS": "Kansas",
+  "KY": "Kentucky",
+  "LA": "Louisiana",
+  "ME": "Maine",
+  "MD": "Maryland",
+  "MA": "Massachusetts",
+  "MI": "Michigan",
+  "MN": "Minnesota",
+  "MS": "Mississippi",
+  "MO": "Missouri",
+  "MT": "Montana",
+  "NE": "Nebraska",
+  "NV": "Nevada",
+  "NH": "New Hampshire",
+  "NJ": "New Jersey",
+  "NM": "New Mexico",
+  "NY": "New York",
+  "NC": "North Carolina",
+  "ND": "North Dakota",
+  "OH": "Ohio",
+  "OK": "Oklahoma",
+  "OR": "Oregon",
+  "PA": "Pennsylvania",
+  "RI": "Rhode Island",
+  "SC": "South Carolina",
+  "SD": "South Dakota",
+  "TN": "Tennessee",
+  "TX": "Texas",
+  "UT": "Utah",
+  "VT": "Vermont",
+  "VA": "Virginia",
+  "WA": "Washington",
+  "WV": "West Virginia",
+  "WI": "Wisconsin",
+  "WY": "Wyoming"
+}
+
+# topic_keywords = []
 def deEmojify(text):
     regrex_pattern = re.compile(pattern = "["
         u"\U0001F600-\U0001F64F"  # emoticons
@@ -105,7 +161,7 @@ def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
 def format_topics_sentences(ldamodel, corpus, texts):
     # Init output
     sent_topics_df = pd.DataFrame()
-
+    topic_keywords = []
     # Get main topic in each document
     for i, row in enumerate(ldamodel[corpus]):
         row = sorted(row, key=lambda x: (x[1]), reverse=True)
@@ -122,7 +178,7 @@ def format_topics_sentences(ldamodel, corpus, texts):
     # Add original text to the end of the output
     contents = pd.Series(texts)
     sent_topics_df = pd.concat([sent_topics_df, contents], axis=1)
-    return(sent_topics_df)
+    return sent_topics_df
 
 # Get the polarity score using below function
 def get_textBlob_score(sent):
@@ -130,7 +186,7 @@ def get_textBlob_score(sent):
     polarity = TextBlob(sent).sentiment.polarity
     return polarity
 
-def processing(df_title):
+def processing(df_title, source, brand, location):
     print("df_title in processing")
     print(df_title.head())
     df_title.text[df_title.text.str.match(pat = '(https)|(http)|(www.)',na = False)]
@@ -231,15 +287,16 @@ def processing(df_title):
     # 0- quality of cooking, 1-good appliance, 2-functionalities 3-product design, 5-how likely to recommend
 
     df_topic_sents_keywords = format_topics_sentences(ldamallet, corpus, data_lemmatized)
+    topics = df_topic_sents_keywords["Topic_Keywords"].unique().tolist()
     # Format
     df_dominant_topic = df_topic_sents_keywords.reset_index()
     df_dominant_topic.columns = ['Document_No', 'Dominant_Topic', 'Topic_Perc_Contrib', 'Keywords', 'Text']
 
 
     # Show
-    print(50*'*')
-    print(df_dominant_topic.head())
-    print(50*'*')
+    # print(50*'*')
+    # print(df_dominant_topic.head())
+    # print(50*'*')
 
     # Prepare sentiment scores for all sentences from text blob
     texblog_senti_scores= []
@@ -251,9 +308,9 @@ def processing(df_title):
     df_full['topics'] = df_dominant_topic['Dominant_Topic'].astype(float)
     df_full['sentiment_scores'] = np.resize(texblog_senti_scores,len(df_full))
 
-    print(50*'*')
-    print(df_full.tail(10))
-    print(50*'*')
+    # print(50*'*')
+    # print(df_full.tail(10))
+    # print(50*'*')
     texblog_senti_scores
     sentiments_textblob = []
     for each in texblog_senti_scores:
@@ -287,6 +344,17 @@ def processing(df_title):
 
     print("ratings----------------------------------------")
     print(ratings)
+    print(topics)
+    topicWiseRatings = []
+    for i in range(len(topics)):
+        temp_dict = {}
+        temp_dict['topic'] = topics[i]
+        temp_dict['rating'] = ratings[i]
+        topicWiseRatings.append(temp_dict) 
+    # topicWiseRatings = dict(zip(topics, ratings))
+    # print(50*'*')
+    # print(topicWiseRatings)
+    # print(50*'*')
     Most_positive_sentences = df_full.nlargest(5, 'sentiment_scores')['text']
     for i in range(len(Most_positive_sentences.index)):
         print(i,") ",df_full.iloc[Most_positive_sentences.index[i]]['text'])
@@ -302,11 +370,16 @@ def processing(df_title):
     print(db)
     # db = client
     # Most_negative_sentences_list = Most_negative_sentences.tolist()
-    review_data = {"name":"Starbucks",
+    state = ''
+    review_data = {"brand": brand.lower(),
     "requestId": "2",
+    "source" : source,
+    "timeStamp" : str(date.today()),
     "negativeSentences": Most_negative_sentences.tolist(),
     "positiveSentences": Most_positive_sentences.tolist(),
-    "ratings": ratings}
+    "topicWiseRatings": topicWiseRatings}
+    if("yelp" == source):
+            review_data['state'] = location
     insert_id = 0
     try:
         dbres = db.twitterreviews.insert_one(review_data)
@@ -322,19 +395,29 @@ def get_yelp_choropleth_map(yelp_df, insert_id):
     client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
     db = client.db
     choropleth_data = yelp_df['state'].value_counts()
-    choropleth_data_dict = {}
+    choropleth_data_dict = []
+    # for index, value in choropleth_data.items():
+        # choropleth_data_dict[index] = (value)
     for index, value in choropleth_data.items():
-        choropleth_data_dict[index] = (value)
+        temp_dict = {}
+        print("-----------------------------------------------------------------")
+        print("index: ", index)
+        print("value: ", value)
+        # print("STATES_ABBREVIATION_MAP[choropleth_data[index]]: ", STATES_ABBREVIATION_MAP[choropleth_data[index]])
+        temp_dict['country'] = STATES_ABBREVIATION_MAP[index]
+        temp_dict['reviewCount'] = value
+        # STATES_ABBREVIATION_MAP[choropleth_data_dict[index]] = (value)
+        choropleth_data_dict.append(temp_dict)
     try:
         dbres = db.twitterreviews.update({"_id": insert_id}, {"$set": {"choropleth_data": choropleth_data_dict}})
-        for attr in dir(dbres):
-            print(attr)
+        # for attr in dir(dbres):
+        #     print(attr)
     except Exception as ex:
         print(ex)
 
 def getReditData(res1):
     df_title = pd.DataFrame()
-    for post in res1.json()['data']['children']:
+    for post in res1['data']['children']:
         df_title = df_title.append({
             # 'subeddit':post['data']['subreddit'],
             'text':post['data']['title'],
@@ -354,7 +437,7 @@ def getYelpData(result):
     }
     df_ids = pd.DataFrame()
     df_reviews = pd.DataFrame()
-    for post in result.json()['businesses']:
+    for post in result['businesses']:
         df_ids = df_ids.append({
             'id':post['id'],
             'state':post['location']['state']
@@ -377,7 +460,7 @@ def getYelpData(result):
 
 def getTwitterData(results):
     df_tweet = pd.DataFrame()
-    for post in results.json()['data']:
+    for post in results['data']:
         df_tweet = df_tweet.append({
             'text':post['text'], 
         }, ignore_index = True)
@@ -386,54 +469,73 @@ def getTwitterData(results):
 
 @app.route('/get_processed_data/')
 def get_processed_data():
-    data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?limitval=36")
+    params = {
+        'brand' : request.args.get('brand'),
+        'location' : request.args.get('location')
+    }
+    # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?brand=" + params["brand"] + "&limitval=36")
+    data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
 
-    data_yelp = requests.get("http://127.0.0.1:5000/getreviews_yelp?term=Starbucks&location=arizona")
+    # data_yelp = requests.get("http://127.0.0.1:5000/getreviews_yelp?brand=" + params["brand"] + "&location=" + params["location"])
+    data_yelp = get_reviews_yelp(params)
     yelp_df = getYelpData(data_yelp)
  
-    data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=Starbucks&tweet.fields=author_id&max_results=10")
+    # data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?brand=" + params["brand"] + "&tweet.fields=author_id&max_results=10")
+    data_twitter = get_reviews_twitter(params['brand'])
     twitter_df = getTwitterData(data_twitter)
 
     frames = [reddit_df, yelp_df, twitter_df]
     combined_data_df = pd.concat(frames)
 
-    processing(combined_data_df)
+    processing(combined_data_df, "all", params['brand'], '')
 
     return {"data":"success sent to database"}
 
 @app.route('/get_processed_data_twitter/')
 def get_processed_data_twitter():
-    data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=Starbucks&tweet.fields=author_id&max_results=10")
+    params = {
+        'brand' : request.args.get('brand'),
+        # 'location' : request.args.get('location')
+    }
+    # data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=" + params["brand"] + "&tweet.fields=author_id&max_results=10")
+    data_twitter = get_reviews_twitter(params['brand'])
     twitter_df = getTwitterData(data_twitter)
-    processing(twitter_df)
+    processing(twitter_df, "twitter", params['brand'], '')
     return {"data":"Twitter proccesing completed. Successly sent to database"}
 
 @app.route('/get_processed_data_yelp/')
 def get_processed_data_yelp():
     params = {
-        'term' : request.args.get('term'),
+        'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
-    data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?term='+params['term']+'&location='+params['location'])
+    # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
+    data_yelp = get_reviews_yelp(params)
     yelp_df = getYelpData(data_yelp)
-    insert_id = processing(yelp_df)
+    insert_id = processing(yelp_df, "yelp", params['brand'], params['location'])
     get_yelp_choropleth_map(yelp_df, insert_id)
     return {"data":"Yelp proccesing completed. Successly sent to database"}
 
 @app.route('/get_processed_data_reddit/')
 def get_processed_data_reddit():
-    data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?limitval=36")
+    params = {
+        'brand' : request.args.get('brand')
+        # 'location' : request.args.get('location')
+    }
+    # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?limitval=36")
+    data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
-    processing(reddit_df)
+    processing(reddit_df, "reddit", params['brand'], '')
     return {"data":"Twitter proccesing completed. Successly sent to database"}
 
-@app.route('/getreviews_reddit/')
-def get_redditreviews():
+# @app.route('/getreviews_reddit/')
+def get_reddit_reviews(params):
+    limitval =  '50'
     res = requests.post('https://www.reddit.com/api/v1/access_token', auth=auth, data=data, headers=head)
     TOKEN = 'bearer ' + res.json()['access_token']
     headers = {'Authorization': TOKEN,'User-Agent': 'MyAPI/0.0.1' }
-    res1 = requests.get('https://oauth.reddit.com/r/starbucks/hot?limit='+request.args.get('limitval'), headers=headers)
+    res1 = requests.get("https://oauth.reddit.com/r/"+ params['brand'] +"/hot?limit=" + limitval, headers=headers)
     return res1.json()
     # # PYMONGO CONNECTION
     # client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
@@ -452,29 +554,33 @@ def get_redditreviews():
     
 
 
-@app.route('/getreviews_yelp/')
-def getreviews_yelp():
+# @app.route('/getreviews_yelp/')
+def get_reviews_yelp(params):
+    # params = {
+    #     'brand' : request.args.get('brand'),
+    #     'location' : request.args.get('location')
+    # }
     headers = {
         'Authorization' : 'bearer '+ config_data['yelp']['token']
     }
-    params = {
-        'term' : request.args.get('term'),
-        'location' : request.args.get('location')
-    }
-    url = 'https://api.yelp.com/v3/businesses/search?term='+params['term']+'&location='+params['location']
+    # params = {
+    #     'brand' : request.args.get('brand'),
+    #     'location' : request.args.get('location')
+    # }
+    url = "https://api.yelp.com/v3/businesses/search?brand=" + params['brand'] + "&location=" + params['location']
     print(url)
     result = requests.get(url,headers=headers)
     return result.json()
     
 
-@app.route('/getreviews_twitter/')
-def getreviews_twitter():
+# @app.route('/getreviews_twitter/')
+def get_reviews_twitter(brand):
     headers = {
       "User-Agent": config_data['twitter']['user_agent'],
       "authorization": 'Bearer '+config_data['twitter']['token']
     }
     params = {
-    "query": "Starbucks",
+    "query": brand,
     "tweet.fields": "geo",
     "max_results": 100,
     }
