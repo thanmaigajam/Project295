@@ -1,34 +1,20 @@
-import  React  from "react";
-import { Component } from "react";
-import Title from './Title';
-import { Rating } from '@mui/material';
-import axios from "axios";
-import {backendServer} from "../webConfig.js";
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
+import  React , {useState} from "react";
+import { styled, createTheme } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
-import Chart from './TopicRating';
 import Deposits from './Donut';
 import Orders from './Orders';
 import Navbar from './navbar';
 import LineGraph from './LineGraph';
-import ChoroplethMap from './ChoroplethMap';
+import MapChart from './ChoroplethMap';
+import ReactTooltip from "react-tooltip";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import MuiDrawer from "@mui/material/Drawer";
+import Container from "@mui/material/Container";
+import TopicRating from "./TopicRating";
+import MuiAppBar from "@mui/material/AppBar";
+
 
 function Copyright(props) {
     return (
@@ -94,10 +80,11 @@ function Copyright(props) {
    const datachoropleth = [
       ["TX", 75], ["CA", 43], ["VA", 50], ["IL", 88],["OH",49]]
   
-  
+
   function YelpReviews() {
     const [open, setOpen] = React.useState(true);
-  
+    const [content, setContent] = useState("");
+
     const [options, series, labels] = React.useState({
       options: {},
       series: [44, 55, 41, 17, 15],
@@ -124,7 +111,7 @@ function Copyright(props) {
                       height: 240,
                     }}
                   >
-                    <Chart reviews="yelp"/>
+                    <TopicRating reviews="yelp"/>
                   </Paper>
                 </Grid>
             
@@ -153,25 +140,21 @@ function Copyright(props) {
                   >
                     <Orders reviews="yelp"/>
                   </Paper>
-                </Grid>
+                </Grid>            
   
-  
-              
-         
-             
-  
-              <Grid item xs={12}>
-              <Paper
+                <Grid item xs={12}>
+                <Paper
                     sx={{
+                      display: 'flex',
                       flexDirection: 'column',
-                      display:'flex',
-                      height: 400,
+                      height : 500
                     }}
                   >
-          <ChoroplethMap reviews="yelp" data={datachoropleth}/>
-        </Paper>
-      
-              </Grid>
+      <MapChart reviews="yelp" setTooltipContent={setContent} />
+      <ReactTooltip>{content}</ReactTooltip>
+      </Paper>
+    </Grid>
+         
   
               <Grid item xs={12}>
                   <Paper

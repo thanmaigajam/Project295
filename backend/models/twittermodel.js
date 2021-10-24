@@ -9,6 +9,6 @@ var twitterSchema = new Schema({
     positiveSentences : [{type : String}],
     requestId : {type : String, required : true},
     timeStamp:{type: Date, required : true},
-    topicWiseRatings : [{topic_name : {type:String},topic_rating : {type:Number}}]
+    topicWiseRatings : [{topic : {type:String},rating : {type:Number}}]
 })
 module.exports = mongoose.model('twitterreviews',twitterSchema);

@@ -1,85 +1,139 @@
-import React, { Component } from 'react';
-import Datamap from 'datamaps/dist/datamaps.usa.min.js';
-import d3 from 'd3';
-import USAJson from './usa.topo.json';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Title from './Title';
+import React, { useState, useEffect } from "react";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { scaleQuantile } from "d3-scale";
+import { csv } from "d3-fetch";
+import DataCSV from "../unemployment-by-county-2017.csv";
+import Title from "./Title";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import axios from "axios";
+import {backendServer} from "../webConfig.js"
 
-class ChoroplethMap extends Component {
-    componentDidMount() {
-        // Datamaps expect data in format:
-        // { "USA": { "fillColor": "#42a844", numberOfWhatever: 75},
-        //   "FRA": { "fillColor": "#8dc386", numberOfWhatever: 43 } }
-        let dataset = {};
+const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3.0.0/states-10m.json";
+//counties - > object
+// let counties = {
+//   "Nevada" : 21,
+//   "Vermont" : 54
+// }
+let counties = [
+  { id: "50", name: "Vermont", year: "2021", unemployment_rate: "36" },
+  {
+    id: "32",
+    name: "Nevada",
+    year: "2021",
+    unemployment_rate: "89",
+  },
+];
 
-        // We need to colorize every country based on "numberOfWhatever"
-        // colors should be uniq for every value.
-        // For this purpose we create palette(using min/max this.props.data-value)
-        let onlyValues = this.props.data.map(function (obj) { return obj[1]; });
-        let minValue = Math.min.apply(null, onlyValues),
-            maxValue = Math.max.apply(null, onlyValues);
 
-        // create color palette function
-        // color can be whatever you wish
-        let paletteScale = d3.scale.linear()
-            .domain([minValue, maxValue])
-            .range(["#EFEFFF", "#02386F"]); // blue color
-
-        // fill dataset in appropriate format
-        this.props.data.forEach(function (item) { //
-            // item example value ["USA", 70]
-            let iso = item[0],
-                value = item[1];
-            dataset[iso] = { numberOfThings: value, fillColor: paletteScale(value) };
-        });
-
-        let map = new Datamap({
-            element: document.getElementById('cloropleth_map'),
-            scope: 'usa',
-            geographyConfig: {
-                popupOnHover: true,
-                highlightOnHover: true,
-                borderColor: '#444',
-                highlightBorderWidth: 1,
-                borderWidth: 1,
-                dataJson: USAJson,
-                popupTemplate: function (geo, data) {
-                    // don't show tooltip if country don't present in dataset
-                    if (!data) { return; }
-                    // tooltip content
-                    return ['<div class="hoverinfo">',
-                        '<strong>', geo.properties.name, '</strong>',
-                        '<br>Count: <strong>', data.numberOfThings, '</strong>',
-                        '</div>'].join('');
-                }
-            },
-            fills: {
-                HIGH: '#afafaf',
-                LOW: '#123456',
-                MEDIUM: 'blue',
-                UNKNOWN: 'rgb(0,0,0)',
-                defaultFill: '#eee'
-            },
-            data: dataset,
-            setProjection: function (element) {
-                var projection = d3.geo.mercator()
-                    .center([-109.3468, 55.1304]) // always in [East Latitude, North Longitude]
-                    .scale(200)
-                    .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
-
-                var path = d3.geo.path().projection(projection);
-                return { path: path, projection: projection };
-            }
-        });
+function get_rate(num) {
+  console.log("in func", num);
+  let ans = "";
+  counties.forEach((element) => {
+    if (element.name === num) {
+      console.log("rate ", element.unemployment_rate);
+      ans = element.unemployment_rate;
     }
-    render() {
-        return (
-        
-            <div id="cloropleth_map" style={{height:'100%',width:'100%'}} ></div>
-        
-        );
-    }
+  });
+  console.log("ans", ans);
+  return ans;
 }
 
-export default ChoroplethMap;
+const MapChart = ({ setTooltipContent }, props) => {
+  let [data, setData] = useState([]);
+  const [brandname, setBrandname] = useState(localStorage.getItem('brand'));
+  const [ reviewtype, setReviewtype] = useState("yelp");
+  // https://www.bls.gov/lau/
+  // csv("/unemployment-by-county-2017.csv").then((counties) => {
+  // setData(counties);
+  // console.log(counties);
+
+  useEffect(() => {
+    // https://www.bls.gov/lau/
+    // csv(DataCSV).then((counties) => {
+    //   setData(counties);
+    // });
+    axios
+    .get(
+      `${backendServer}/reviews_for_choropleth/${brandname}/${reviewtype}}`
+    )
+    .then((response) => {
+      console.log("Pro are::", response.data);
+      if (response.data != null) {
+        console.log("response data",response.data);
+        counties = response.data.choropleth_data;
+      }
+      console.log("Pro are::", counties);
+    });
+
+  }, []);
+
+  console.log(counties);
+  // let temp = []
+  // temp.concat({ id: 32, unemployment_rate: 37 });
+  // setData(temp)
+  const colorScale = scaleQuantile()
+    .domain(data.map((d) => d.unemployment_rate))
+    .range([
+      "#ffedea",
+      "#ffcec5",
+      "#ffad9f",
+      "#ff8a75",
+      "#ff5533",
+      "#e2492d",
+      "#be3d26",
+      "#9a311f",
+      "#782618",
+    ]);
+
+  return (
+    <Grid item xs={12}>
+      <Paper
+        sx={{
+          p: 2,
+          display: "flex",
+          flexDirection: "column",
+          height: 500,
+        }}
+      >
+        <Title>Choropleth Map</Title>
+        <ComposableMap data-tip="" projection="geoAlbersUsa">
+          <Geographies geography={geoUrl}>
+            {({ geographies }) =>
+              geographies.map((geo) => {
+                let cur = data.find((s) => s.name === geo.properties.name);
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    onMouseEnter={() => {
+                      const { name } = geo.properties;
+                      setTooltipContent(`${name} - ${get_rate(name)}`);
+                    }}
+                    onMouseLeave={() => {
+                      setTooltipContent("");
+                    }}
+                    fill={cur ? colorScale(cur.unemployment_rate) : "#EEE"}
+                    style={{
+                    
+                      hover: {
+                        fill: "#F53",
+                        outline: "none"
+                      },
+                      pressed: {
+                        fill: "#E42",
+                        outline: "none"
+                      }
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        </ComposableMap>
+      </Paper>
+    </Grid>
+  );
+};
+
+export default MapChart;

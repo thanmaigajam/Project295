@@ -2,13 +2,7 @@ import { Component } from "react";
 import "./App.css";
 import Main from "./components/Main";
 import { BrowserRouter, Router } from "react-router-dom";
-import { history } from "./utils/history";
-import Navbar from "./components/navbar";
-import CovidSymptomChecker from "./components/covid-symptom-checker";
-import HomePage from "./components/homepage";
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 

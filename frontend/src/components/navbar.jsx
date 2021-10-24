@@ -1,65 +1,12 @@
-// import React from "react";
-// import { makeStyles } from "@material-ui/core/styles";
-// import AppBar from "@material-ui/core/AppBar";
-// import Toolbar from "@material-ui/core/Toolbar";
-// import Typography from "@material-ui/core/Typography";
-// import Button from "@material-ui/core/Button";
-// import IconButton from "@material-ui/core/IconButton";
-// import MenuIcon from "@material-ui/icons/Menu";
-
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     flexGrow: 1,
-//   },
-//   menuButton: {
-//     marginRight: theme.spacing(2),
-//   },
-//   title: {
-//     flexGrow: 1,
-//   },
-// }));
-
-// export default function Navbar() {
-//   const classes = useStyles();
-
-//   return (
-//     <div className={classes.root}>
-//       <AppBar position="static">
-//         <Toolbar>
-//           <IconButton
-//             edge="start"
-//             className={classes.menuButton}
-//             color="inherit"
-//             aria-label="menu"
-//           >
-//             <MenuIcon />
-//           </IconButton>
-//           <Typography variant="h6" className={classes.title}>
-//             News
-//           </Typography>
-//           <Button color="inherit">Login</Button>
-//         </Toolbar>
-//       </AppBar>
-//     </div>
-//   );
-// }
-
 import React from "react";
 import clsx from "clsx";
-import { Link, Route, Redirect } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Drawer from "@material-ui/core/Drawer";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Button from "@material-ui/core/Button";
-import PeopleIcon from "@material-ui/icons/People";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import EventIcon from "@material-ui/icons/Event";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import FaceIcon from "@material-ui/icons/Face";
-import LocalMallIcon from "@material-ui/icons/LocalMall";
-import AccountTreeIcon from "@material-ui/icons/AccountTree";
-import LogoutIcon from '@mui/icons-material/Logout';
+import LogoutIcon from "@mui/icons-material/Logout";
 import List from "@material-ui/core/List";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
@@ -70,11 +17,9 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import GroupIcon from "@material-ui/icons/Group";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ListItemText from "@material-ui/core/ListItemText";
-import RoomIcon from "@material-ui/icons/Room";
-import HomePage from "./homepage";
+
 
 // import BeenhereIcon from "@material-ui/icons/Beenhere";
 
@@ -103,7 +48,8 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36  },
+    marginRight: 36,
+  },
   hide: {
     display: "none",
   },
@@ -158,18 +104,14 @@ export default function Navbar(props) {
   };
 
   const handleLogout = async () => {
-   localStorage.clear();
-   window.location.href = "/";
+    localStorage.clear();
+    window.location.href = "/";
   };
 
   const handleLogin = async () => {};
 
-  return ( 
-      
-   
-    <div className={classes.root} style ={{marginBottom : "50px"}}>
-   
-     
+  return (
+    <div className={classes.root} style={{ marginBottom: "50px" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -177,36 +119,37 @@ export default function Navbar(props) {
           [classes.appBarShift]: open,
         })}
       >
-
         <Toolbar>
-        {localStorage.getItem("token") && (
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open,
-            })}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
+          {localStorage.getItem("token") && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open,
+              })}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <Typography variant="h6" noWrap>
             Know your brand's social media presence
           </Typography>
 
           <div className={classes.grow} />
           {localStorage.getItem("token") && (
-          <IconButton  color="inherit"
-            aria-label="open drawer"
-            onClick={handleLogout}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open,
-            })}>
-            <LogoutIcon/>
-          </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleLogout}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open,
+              })}
+            >
+              <LogoutIcon />
+            </IconButton>
           )}
           {/* {!!props?.auth ? (
             <Button color="inherit" onClick={handleLogout}>
@@ -219,53 +162,53 @@ export default function Navbar(props) {
           )} */}
         </Toolbar>
       </AppBar>
-     
-        {localStorage.getItem("token") && (
-      <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: open,
-          [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: clsx({
+
+      {localStorage.getItem("token") && (
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
             [classes.drawerOpen]: open,
             [classes.drawerClose]: !open,
-          }),
-        }}
-      >
-        <div className={classes.toolbar}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton>
-        </div>
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: open,
+              [classes.drawerClose]: !open,
+            }),
+          }}
+        >
+          <div className={classes.toolbar}>
+            <IconButton onClick={handleDrawerClose}>
+              {theme.direction === "rtl" ? (
+                <ChevronRightIcon />
+              ) : (
+                <ChevronLeftIcon />
+              )}
+            </IconButton>
+          </div>
 
-        <Divider />
-        <List>
-          <Link className="remove-link-style" to="/homepage">
-            <ListItem button key="Groups">
-              <ListItemIcon>
-                <CalendarTodayIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-          </Link>
           <Divider />
-          <Link className="remove-link-style" to="/Adminprofilepage">
-            <ListItem button key="Groups">
-              <ListItemIcon>
-                <AccountCircleIcon />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItem>
-          </Link>
-        </List>
-      </Drawer>
-       )}
+          <List>
+            <Link className="remove-link-style" to="/homepage">
+              <ListItem button key="Groups">
+                <ListItemIcon>
+                  <CalendarTodayIcon />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItem>
+            </Link>
+            <Divider />
+            <Link className="remove-link-style" to="/Adminprofilepage">
+              <ListItem button key="Groups">
+                <ListItemIcon>
+                  <AccountCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Profile" />
+              </ListItem>
+            </Link>
+          </List>
+        </Drawer>
+      )}
       {/* <main className={classes.content}>
         <div className={classes.toolbar} />
         

@@ -14,7 +14,7 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
-import Chart from "./TopicRating";
+import TopicRating from "./TopicRating";
 import Deposits from "./Donut";
 import Orders from "./Orders";
 import Navbar from "./navbar";
@@ -125,7 +125,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Chart reviews="twitter"/>
+                  <TopicRating reviews="twitter"/>
                 </Paper>
               </Grid>
           
@@ -161,18 +161,7 @@ function DashboardContent() {
        
            
 
-            <Grid item xs={12}>
-            <Paper
-                  sx={{
-                    flexDirection: 'column',
-                    display:'flex',
-                    height: 400,
-                  }}
-                >
-        <ChoroplethMap  reviews="twitter" data={datachoropleth}/>
-      </Paper>
-    
-            </Grid>
+          
 
             <Grid item xs={12}>
                 <Paper

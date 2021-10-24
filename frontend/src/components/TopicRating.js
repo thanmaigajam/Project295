@@ -35,8 +35,12 @@ class TopicRating extends Component {
         topicsAndRatings : response.data.topicWiseRatings
       });
     }
-      console.log("topicandratings"+this.state.topicsAndRatings);
+      console.log("topicandratings are -------------"+this.state.topicsAndRatings);
+     
     });
+    // this.setState({
+    //   topicsAndRatings : null
+    // });
   }
 
   render()
@@ -52,11 +56,11 @@ class TopicRating extends Component {
          align : 'top',
           fontWeight: 'medium',
             
-        }} color="inherit" noWrap><span style={{marginRight:'10px'}}><span>{row.topic_name}</span> </span> 
+        }} color="inherit" noWrap><span style={{marginRight:'10px'}}><span>{row.topic}</span> </span> 
 
       <Rating 
   name="text-feedback"
-  value={row.topic_rating}
+  value={row.rating}
   readOnly
   precision={0.5}
   >  </Rating>
