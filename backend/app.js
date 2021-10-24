@@ -91,10 +91,10 @@ app.get("/getreviews_twitter", async function (request, response) {
     });
 });
 
-var twitterRouter = require("./api/twitter/twitter.router");
+var reviewsRouter = require("./api/reviews/reviews.router");
 var registerRouter = require("./api/register/register.router");
 var loginRouter = require("./api/login/login.router");
-app.use("/twitter", twitterRouter);
+app.use("/reviews", reviewsRouter);
 app.use("/register",registerRouter);
 app.use("/login",loginRouter);
 

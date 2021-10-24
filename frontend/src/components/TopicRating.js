@@ -16,30 +16,34 @@ class TopicRating extends Component {
     this.state = {
       options : { maintainAspectRatio: false },
       topicsAndRatings : [],
-      brandname : localStorage.getItem("brand")
+      brandname : localStorage.getItem("brand"),
+      reviewtype : this.props.reviews
     }
 
   }
 
   componentDidMount()
   {
+    console.log("reviews are from",this.state.reviewtype);
     axios
-    .get(`${backendServer}/twitter/${this.state.brandname}`)
+    .get(`${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`)
     .then((response,error) => {
       console.log("Pro are::", response.data);
+      if(response.data != null)
+      {
       this.setState({
-        topicsAndRatings : response.data[0].topicsAndRatings
+        topicsAndRatings : response.data.topicWiseRatings
       });
+    }
       console.log("topicandratings"+this.state.topicsAndRatings);
     });
   }
 
   render()
   {
-    let topicsandratings = this.state.topicsAndRatings.map((row) =>
+    let topicsandratings =  this.state.topicsAndRatings?.map((row) =>
     {
       
-   
     return (
       <React.Fragment>
               
@@ -65,7 +69,8 @@ class TopicRating extends Component {
 
         <div>
           <Title>Ratings</Title>
-        {topicsandratings}
+    
+          {topicsandratings} 
         </div>
       );
   }

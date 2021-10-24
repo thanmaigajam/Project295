@@ -14,10 +14,6 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./TopicRating";
 import Deposits from "./Donut";
 import Orders from "./Orders";
@@ -100,7 +96,7 @@ const datachoropleth = [
   ["OH", 49],
 ];
 
-function DashboardContent() {
+function Reddit_Reviews() {
   const [open, setOpen] = React.useState(true);
 
   const [options, series, labels] = React.useState({
@@ -117,75 +113,75 @@ function DashboardContent() {
     <div>
       <Navbar />
       <container id="myDiv"></container>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Grid container spacing={3}>
-          {/* Chart */}
-          <Grid item xs={12} md={4} lg={9}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                height: 240,
-              }}
-            >
-              <Chart />
-            </Paper>
-          </Grid>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+              {/* Chart */}
+              <Grid item xs={12} md={4} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <Chart reviews="reddit"/>
+                </Paper>
+              </Grid>
+          
+              {/* Recent Deposits */}
+              <Grid item xs={12} md={4} lg={3}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <Deposits reviews="reddit"/>
+                </Paper>
+              </Grid>
+              {/* Recent Orders */}
+              <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                  }}
+                >
+                  <Orders reviews="reddit"/>
+                </Paper>
+              </Grid>
 
-          {/* Recent Deposits */}
-          <Grid item xs={12} md={4} lg={3}>
-            <Paper
-              sx={{
-                p: 2,
-                display: "flex",
-                flexDirection: "column",
-                height: 240,
-              }}
-            >
-              <Deposits />
-            </Paper>
-          </Grid>
-          {/* Recent Orders */}
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Orders />
-            </Paper>
-          </Grid>
 
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                flexDirection: "column",
-                display: "flex",
-                height: 400,
-              }}
-            >
-              <ChoroplethMap data={datachoropleth} />
-            </Paper>
-          </Grid>
+            
+       
+           <div>
 
-          <Grid item xs={12}>
-            <Paper
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <LineGraph />
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-    </div>
+        <ChoroplethMap  reviews="reddit" data={datachoropleth}/>
+  </div>
+
+            <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                  }}
+                >
+                  <LineGraph reviews="reddit"/>
+                </Paper>
+              </Grid>
+            </Grid>
+            </Container>
+            </div>
+        
   );
 }
 
 export default function Dashboard() {
-  return <DashboardContent />;
+  return <Reddit_Reviews />;
 }

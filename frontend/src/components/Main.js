@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import CovidSymptomChecker from "./covid-symptom-checker";
 import Navbar from "./navbar";
 import YelpReviews from "./yelp_reviews";
-import TweetReviews from "./tweet_reviews";
-import Dashboard from "./Dashboard";
+import TweetReviews from "./twitter_reviews";
 import Signup from "./Signup";
 import Login from "./Login";
-import HomePage from "./Homepage";
+import HomePage from "./homepage";
 import Sample from "./Sample";
+import RedditReviews from "./reddit_reviews";
 
 class Routes extends Component {
   render() {
@@ -18,15 +18,13 @@ class Routes extends Component {
           <Fragment>
             <Navbar></Navbar>
             <Route path="/homepage" component={HomePage}/>
+            <Route path="/reddit_reviews" component={RedditReviews}/>
 
             {/* <Route exact path="/" component={Login} /> */}
-            <Route path="/dashboard" component={Dashboard}/>
             <Route path="/sample" component={Sample}/>
             <Route path="/covidSymptomChecker" component={CovidSymptomChecker} />
             <Route path="/yelp_reviews" component={YelpReviews}/>
             <Route path="/twitter_reviews" component={TweetReviews}/>
-
-
           </Fragment>
         )}
        
