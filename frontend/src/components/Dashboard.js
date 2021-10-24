@@ -162,7 +162,8 @@ function DashboardContent() {
                   sx={{
                     flexDirection: 'column',
                     display:'flex',
-                    height: 400
+                    height: 400,
+                    width:300
                   }}
                 >
         <ChoroplethMap  data={datachoropleth}/>
