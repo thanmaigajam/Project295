@@ -7,7 +7,7 @@ import TweetReviews from "./tweet_reviews";
 import Dashboard from "./Dashboard";
 import Signup from "./Signup";
 import Login from "./Login";
-import HomePage from "./homepage";
+import HomePage from "./Homepage";
 import Sample from "./Sample";
 
 class Routes extends Component {

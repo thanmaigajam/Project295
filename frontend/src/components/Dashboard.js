@@ -22,10 +22,6 @@ import Chart from './TopicRating';
 import Deposits from './Donut';
 import Orders from './Orders';
 import Navbar from './navbar';
-import LineGraph from './LineGraph';
-import ChoroplethMap from './ChoroplethMap';
-import Title from './Title';
-
 
 function Copyright(props) {
   return (
@@ -88,10 +84,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
- const datachoropleth = [
-    ["TX", 75], ["CA", 43], ["VA", 50], ["IL", 88],["OH",49]]
-
-
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
 
@@ -108,7 +100,6 @@ function DashboardContent() {
   return (
     <div>
       <Navbar/>
-      <container id="myDiv"></container>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
               {/* Chart */}
@@ -142,45 +133,19 @@ function DashboardContent() {
               <Grid item xs={12}>
                 <Paper
                   sx={{
-                    
+                    p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    
+                    height: 500,
                   }}
                 >
                   <Orders />
                 </Paper>
               </Grid>
-
-
-            
-       
-           
-
-            <Grid item xs={12}>
-            <Paper
-                  sx={{
-                    flexDirection: 'column',
-                    display:'flex',
-                    height: 400
-                  }}
-                >
-        <ChoroplethMap  data={datachoropleth}/>
-      </Paper>
-    
+             
             </Grid>
-
-            <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    
-                  }}
-                >
-                  <LineGraph />
-                </Paper>
-              </Grid>
+            <Grid>
+              
             </Grid>
             </Container>
             </div>

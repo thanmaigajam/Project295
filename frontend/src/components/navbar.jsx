@@ -74,7 +74,7 @@ import GroupIcon from "@material-ui/icons/Group";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import ListItemText from "@material-ui/core/ListItemText";
 import RoomIcon from "@material-ui/icons/Room";
-import HomePage from "./homepage";
+import HomePage from "./Homepage";
 
 // import BeenhereIcon from "@material-ui/icons/Beenhere";
 
