@@ -121,7 +121,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Chart />
+                  <Chart reviews="twitter"/>
                 </Paper>
               </Grid>
           
@@ -135,7 +135,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Deposits />
+                  <Deposits reviews="twitter"/>
                 </Paper>
               </Grid>
               {/* Recent Orders */}
@@ -148,7 +148,7 @@ function DashboardContent() {
                     
                   }}
                 >
-                  <Orders />
+                  <Orders reviews="twitter"/>
                 </Paper>
               </Grid>
 
@@ -163,10 +163,9 @@ function DashboardContent() {
                     flexDirection: 'column',
                     display:'flex',
                     height: 400,
-                    width:300
                   }}
                 >
-        <ChoroplethMap  data={datachoropleth}/>
+        <ChoroplethMap  reviews="twitter" data={datachoropleth}/>
       </Paper>
     
             </Grid>
@@ -179,7 +178,7 @@ function DashboardContent() {
                     
                   }}
                 >
-                  <LineGraph />
+                  <LineGraph reviews="twitter"/>
                 </Paper>
               </Grid>
             </Grid>

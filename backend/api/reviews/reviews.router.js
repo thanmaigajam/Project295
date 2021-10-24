@@ -2,8 +2,8 @@ const router = require("express").Router();
 
 const {
     gettwitterdata
-} = require("./twitter.controller");
+} = require("./reviews.controller");
 
-router.get("/:brandname", gettwitterdata);
+router.get("/:brandname/:reviewtype", gettwitterdata);
 
 module.exports = router;

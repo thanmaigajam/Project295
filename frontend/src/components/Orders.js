@@ -65,14 +65,15 @@ class Orders extends Component
         this.state = {
             negativeSentences : [],
             positiveSentences : [],
-            brandname : localStorage.getItem('brand')
+            brandname : localStorage.getItem('brand'),
+            reviewtype:this.props.reviews
         }
     }
 
     componentDidMount()
     {
         axios
-        .get(`${backendServer}/twitter/${this.state.brandname}`)
+        .get(`${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`)
         .then((response) => {
           console.log("Pro are::", response.data);
           this.setState({
