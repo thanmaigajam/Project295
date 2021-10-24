@@ -76,10 +76,13 @@ class Orders extends Component
         .get(`${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`)
         .then((response) => {
           console.log("Pro are::", response.data);
+          if(response.data != null)
+          {
           this.setState({
-            negativeSentences: response.data[0].negativeSentences,
-            positiveSentences : response.data[0].positiveSentences
+            negativeSentences: response.data.negativeSentences,
+            positiveSentences : response.data.positiveSentences
           });
+        }
           console.log("Pro are::", this.state.negativeSentences);
           console.log(this.state.positiveSentences)
         });
@@ -87,7 +90,7 @@ class Orders extends Component
 
     render()
     {
-        let positiveSentences =    this.state.positiveSentences.map((row) => {
+        let positiveSentences =    this.state.positiveSentences?this.state.positiveSentences.map((row) => {
         return (
             <React.Fragment>
             
@@ -116,9 +119,10 @@ class Orders extends Component
               {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
                 See more orders
               </Link> */}
-            </React.Fragment>)});
+            </React.Fragment>)}
+            ):"";
 
-   let negativeSentences =    this.state.negativeSentences.map((row) => {
+   let negativeSentences =   this.state.negativeSentences? this.state.negativeSentences.map((row) => {
     return (
         <React.Fragment>
         
@@ -147,17 +151,17 @@ class Orders extends Component
           {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
             See more orders
           </Link> */}
-        </React.Fragment>)});
+        </React.Fragment>)}):"";
 
 return (
 <Grid container spacing={3}>
-    <Grid item xs={12} md={6} lg={6}>
+    <Grid item xs={12} >
     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height : 300}}>
     <Title>Top 5 Positive Sentences</Title>
     {positiveSentences}
     </Paper>
   </Grid>
-  <Grid item xs={12} md={6} lg={6}>
+  <Grid item xs={12}>
     <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: 300 }}>
     <Title>Top 5 Negative Sentences</Title>
     {negativeSentences}

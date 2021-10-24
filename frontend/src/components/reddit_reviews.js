@@ -14,10 +14,6 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import Link from "@mui/material/Link";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
 import Chart from "./TopicRating";
 import Deposits from "./Donut";
 import Orders from "./Orders";
@@ -100,7 +96,7 @@ const datachoropleth = [
   ["OH", 49],
 ];
 
-function DashboardContent() {
+function Reddit_Reviews() {
   const [open, setOpen] = React.useState(true);
 
   const [options, series, labels] = React.useState({
@@ -129,7 +125,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Chart reviews="twitter"/>
+                  <Chart reviews="reddit"/>
                 </Paper>
               </Grid>
           
@@ -143,7 +139,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Deposits reviews="twitter"/>
+                  <Deposits reviews="reddit"/>
                 </Paper>
               </Grid>
               {/* Recent Orders */}
@@ -156,27 +152,17 @@ function DashboardContent() {
                     
                   }}
                 >
-                  <Orders reviews="twitter"/>
+                  <Orders reviews="reddit"/>
                 </Paper>
               </Grid>
 
 
             
        
-           
+           <div>
 
-            <Grid item xs={12}>
-            <Paper
-                  sx={{
-                    flexDirection: 'column',
-                    display:'flex',
-                    height: 400,
-                  }}
-                >
-        <ChoroplethMap  reviews="twitter" data={datachoropleth}/>
-      </Paper>
-    
-            </Grid>
+        <ChoroplethMap  reviews="reddit" data={datachoropleth}/>
+  </div>
 
             <Grid item xs={12}>
                 <Paper
@@ -186,7 +172,7 @@ function DashboardContent() {
                     
                   }}
                 >
-                  <LineGraph reviews="twitter"/>
+                  <LineGraph reviews="reddit"/>
                 </Paper>
               </Grid>
             </Grid>
@@ -197,5 +183,5 @@ function DashboardContent() {
 }
 
 export default function Dashboard() {
-  return <DashboardContent />;
+  return <Reddit_Reviews />;
 }

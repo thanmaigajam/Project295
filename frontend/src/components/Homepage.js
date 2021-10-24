@@ -14,7 +14,7 @@ class HomePage extends React.Component {
       <React.Fragment>
         <div style = {{marginTop : "100px"}}>
          
-          <Link to="/dashboard" className="remove-link-style ml-3">
+          <Link to="/twitter_reviews" className="remove-link-style ml-3">
             <Button variant="outlined" color="primary">
               Twitter Reviews
             </Button>

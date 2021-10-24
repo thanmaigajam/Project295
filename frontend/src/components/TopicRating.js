@@ -24,24 +24,26 @@ class TopicRating extends Component {
 
   componentDidMount()
   {
-    console.log("reviews are from",this.state.reviews);
+    console.log("reviews are from",this.state.reviewtype);
     axios
     .get(`${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`)
     .then((response,error) => {
       console.log("Pro are::", response.data);
+      if(response.data != null)
+      {
       this.setState({
-        topicsAndRatings : response.data[0].topicsAndRatings
+        topicsAndRatings : response.data.topicWiseRatings
       });
+    }
       console.log("topicandratings"+this.state.topicsAndRatings);
     });
   }
 
   render()
   {
-    let topicsandratings = this.state.topicsAndRatings.map((row) =>
+    let topicsandratings =  this.state.topicsAndRatings?.map((row) =>
     {
       
-   
     return (
       <React.Fragment>
               
@@ -67,7 +69,8 @@ class TopicRating extends Component {
 
         <div>
           <Title>Ratings</Title>
-        {topicsandratings}
+    
+          {topicsandratings} 
         </div>
       );
   }

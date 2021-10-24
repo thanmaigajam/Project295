@@ -75,12 +75,9 @@ class ChoroplethMap extends Component {
     }
     render() {
         return (
-            <Grid >
-            <Paper sx={{ p:2,height:400, display: 'flex', flexDirection: 'column'}}>
-             <Title>Sentiment Scores</Title>
-            <Grid id="cloropleth_map" style={{height:'100%',width:'100%'}} height={350}></Grid>
-          </Paper>
-          </Grid>
+        
+            <div id="cloropleth_map" style={{height:'100%',width:'100%'}} ></div>
+        
         );
     }
 }
