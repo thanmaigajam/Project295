@@ -64,14 +64,15 @@ class Orders extends Component
         super(props);
         this.state = {
             negativeSentences : [],
-            positiveSentences : []
+            positiveSentences : [],
+            brandname : localStorage.getItem('brand')
         }
     }
 
     componentDidMount()
     {
         axios
-        .get(`${backendServer}/twitter`)
+        .get(`${backendServer}/twitter/${this.state.brandname}`)
         .then((response) => {
           console.log("Pro are::", response.data);
           this.setState({
