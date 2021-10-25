@@ -26,16 +26,18 @@ class TopicRating extends Component {
   {
     console.log("reviews are from",this.state.reviewtype);
     axios
-    .get(`${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`)
+    .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
     .then((response,error) => {
       console.log("Pro are::", response.data);
       if(response.data != null)
       {
+        console.log("rating")
       this.setState({
-        topicsAndRatings : response.data.topicWiseRatings
+        topicsAndRatings : response.data.data.topicWiseRatings
       });
-    }
       console.log("topicandratings are -------------"+this.state.topicsAndRatings);
+
+    }
      
     });
     // this.setState({

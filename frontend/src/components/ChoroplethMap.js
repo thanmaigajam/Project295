@@ -15,24 +15,16 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3.0.0/states-10m.json";
 //   "Nevada" : 21,
 //   "Vermont" : 54
 // }
-let counties = [
-  { id: "50", name: "Vermont", year: "2021", unemployment_rate: "36" },
-  {
-    id: "32",
-    name: "Nevada",
-    year: "2021",
-    unemployment_rate: "89",
-  },
-];
+let counties = [];
 
 
 function get_rate(num) {
   console.log("in func", num);
   let ans = "";
   counties.forEach((element) => {
-    if (element.name === num) {
-      console.log("rate ", element.unemployment_rate);
-      ans = element.unemployment_rate;
+    if (element.country === num) {
+      console.log("rate ", element.reviewCount);
+      ans = element.reviewCount;
     }
   });
   console.log("ans", ans);
@@ -41,7 +33,7 @@ function get_rate(num) {
 
 const MapChart = ({ setTooltipContent }, props) => {
   let [data, setData] = useState([]);
-  const [brandname, setBrandname] = useState(localStorage.getItem('brand'));
+  const [brandname, setBrandname] = useState(localStorage.getItem("brand"));
   const [ reviewtype, setReviewtype] = useState("yelp");
   // https://www.bls.gov/lau/
   // csv("/unemployment-by-county-2017.csv").then((counties) => {
@@ -55,13 +47,16 @@ const MapChart = ({ setTooltipContent }, props) => {
     // });
     axios
     .get(
-      `${backendServer}/reviews_for_choropleth/${brandname}/${reviewtype}}`
+      `${backendServer}/reviews/get_choropleth/${brandname}`
     )
     .then((response) => {
       console.log("Pro are::", response.data);
       if (response.data != null) {
-        console.log("response data",response.data);
-        counties = response.data.choropleth_data;
+        console.log("response data",response.data.data.choropleth_data);
+        response.data.data.choropleth_data.forEach(element => {
+          counties.push(element)
+        });
+      // counties.push(response.data.data.choropleth_data)
       }
       console.log("Pro are::", counties);
     });
@@ -73,7 +68,7 @@ const MapChart = ({ setTooltipContent }, props) => {
   // temp.concat({ id: 32, unemployment_rate: 37 });
   // setData(temp)
   const colorScale = scaleQuantile()
-    .domain(data.map((d) => d.unemployment_rate))
+    .domain(counties.map((d) => d.reviewCount))
     .range([
       "#ffedea",
       "#ffcec5",
@@ -101,7 +96,7 @@ const MapChart = ({ setTooltipContent }, props) => {
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                let cur = data.find((s) => s.name === geo.properties.name);
+                let cur = counties.find((s) => s.country === geo.properties.name);
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -113,7 +108,7 @@ const MapChart = ({ setTooltipContent }, props) => {
                     onMouseLeave={() => {
                       setTooltipContent("");
                     }}
-                    fill={cur ? colorScale(cur.unemployment_rate) : "#EEE"}
+                    fill={cur ? colorScale(cur.reviewCount) : "#EEE"}
                     style={{
                     
                       hover: {
