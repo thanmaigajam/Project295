@@ -6,7 +6,7 @@ import YelpReviews from "./yelp_reviews";
 import TweetReviews from "./twitter_reviews";
 import Signup from "./Signup";
 import Login from "./Login";
-import HomePage from "./HomePage";
+import HomePage from "./Homepage";
 import Sample from "./Sample";
 import RedditReviews from "./reddit_reviews";
 
