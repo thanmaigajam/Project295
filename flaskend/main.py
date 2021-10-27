@@ -7,6 +7,7 @@ import json
 import time
 from datetime import date
 import certifi
+import copy
 
 from werkzeug.datastructures import Authorization
 app = Flask(__name__)
@@ -185,6 +186,39 @@ def get_textBlob_score(sent):
     # This polarity score is between -1 to 1
     polarity = TextBlob(sent).sentiment.polarity
     return polarity
+def get_donut_sentiment_counts(texblog_senti_scores):
+    sentiments_three_textblob = []
+    for each in texblog_senti_scores:
+        if(each >0):
+            a=1
+        elif(each == 0):
+            a=0
+        else:
+            a=-1
+        sentiments_three_textblob.append(a)
+    sentiments_three_textblob_df = pd.DataFrame(sentiments_three_textblob)
+    return sentiments_three_textblob_df
+
+def convert_utc_to_date(time_in_utc):
+    return time.strftime('%Y-%m-%d', time.localtime(time_in_utc))
+
+def convert_utc_to_date_list(utc_list):
+    return [convert_utc_to_date(x) for x in utc_list]
+
+def get_line_graph_polarity_dates_reddit(df_full):
+    polarity_pos_utc = df_full.loc[df_full['polarity three'] == 1, 'created_utc'].to_list()
+    polarity_neu_utc = df_full.loc[df_full['polarity three'] == 0, 'created_utc'].to_list()
+    polarity_neg_utc = df_full.loc[df_full['polarity three'] == -1, 'created_utc'].to_list()
+    polarity_wise_utc_dates = {
+        'positive' : convert_utc_to_date_list(polarity_pos_utc),
+        'neutral': convert_utc_to_date_list(polarity_neu_utc),
+        'negative' : convert_utc_to_date_list(polarity_neg_utc)
+        }
+    # polarity_wise_utc_dates['positive'] = convert_utc_to_date_list(polarity_pos_utc)
+    # polarity_wise_utc_dates['neutral'] = convert_utc_to_date_list(polarity_neu_utc)
+    # polarity_wise_utc_dates['negative'] = convert_utc_to_date_list(polarity_neg_utc)
+    return polarity_wise_utc_dates
+
 
 def processing(df_title, source, brand, location):
     print("df_title in processing")
@@ -319,6 +353,19 @@ def processing(df_title, source, brand, location):
         else:
             a=0
         sentiments_textblob.append(a)
+    sentiments_three_textblob = []
+
+    polarity_pos_neg_neu = get_donut_sentiment_counts(texblog_senti_scores)
+    df_full['polarity three'] = np.resize(polarity_pos_neg_neu,len(df_full))
+
+    donut_sentiment_counts = polarity_pos_neg_neu[0].value_counts()
+    donut_sentiment_counts_dict = []
+    for index, value in donut_sentiment_counts.items():
+        temp_dict = {}
+        temp_dict['polarity'] = index
+        temp_dict['reviewCount'] = value
+        donut_sentiment_counts_dict.append(temp_dict)
+
     df_full['sentiment'] = np.resize(sentiments_textblob,len(df_full))
     topic_wise_sentiment_counts = df_full.groupby(['topics'])['sentiment'].value_counts()
     topic_wise_sentiment_sum = df_full.groupby(['topics'])['sentiment'].sum()
@@ -364,6 +411,7 @@ def processing(df_title, source, brand, location):
     for i in range(len(Most_negative_sentences.index)):
         print(i,") ",df_full.iloc[Most_negative_sentences.index[i]]['text'])
     print("Most_negative_sentences --------------------------", Most_negative_sentences)
+
     # PYMONGO CONNECTION
     client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
     db = client.db
@@ -372,16 +420,24 @@ def processing(df_title, source, brand, location):
     # Most_negative_sentences_list = Most_negative_sentences.tolist()
     state = ''
     review_data = {"brand": brand.lower(),
-    "requestId": "2",
+    "requestId": "3",
     "source" : source,
     "timeStamp" : str(date.today()),
     "negativeSentences": Most_negative_sentences.tolist(),
     "positiveSentences": Most_positive_sentences.tolist(),
-    "topicWiseRatings": topicWiseRatings}
+    "topicWiseRatings": topicWiseRatings,
+    "donutSentimentCounts": donut_sentiment_counts_dict
+    }
     if("yelp" == source):
             review_data['state'] = location
+            review_data['choroplethData'] = get_yelp_choropleth_map(df_title)
+
+    if("reddit" == source):
+        review_data['LineGraphPolarityDates'] = get_line_graph_polarity_dates_reddit(df_full)
+    mongo_data = copy.deepcopy(review_data)
     insert_id = 0
     try:
+        dbresRemove = db.twitterreviews.remove({"source": source})
         dbres = db.twitterreviews.insert_one(review_data)
         insert_id = dbres.inserted_id
         # for attr in dir(dbres):
@@ -389,31 +445,19 @@ def processing(df_title, source, brand, location):
     except Exception as ex:
         print(ex)
     print("insert_id ---------------------------", insert_id)
-    return insert_id 
+    return mongo_data, insert_id
 
-def get_yelp_choropleth_map(yelp_df, insert_id):
+def get_yelp_choropleth_map(yelp_df):
     client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
     db = client.db
     choropleth_data = yelp_df['state'].value_counts()
     choropleth_data_dict = []
-    # for index, value in choropleth_data.items():
-        # choropleth_data_dict[index] = (value)
     for index, value in choropleth_data.items():
         temp_dict = {}
-        print("-----------------------------------------------------------------")
-        print("index: ", index)
-        print("value: ", value)
-        # print("STATES_ABBREVIATION_MAP[choropleth_data[index]]: ", STATES_ABBREVIATION_MAP[choropleth_data[index]])
         temp_dict['country'] = STATES_ABBREVIATION_MAP[index]
         temp_dict['reviewCount'] = value
-        # STATES_ABBREVIATION_MAP[choropleth_data_dict[index]] = (value)
         choropleth_data_dict.append(temp_dict)
-    try:
-        dbres = db.twitterreviews.update({"_id": insert_id}, {"$set": {"choropleth_data": choropleth_data_dict}})
-        # for attr in dir(dbres):
-        #     print(attr)
-    except Exception as ex:
-        print(ex)
+    return choropleth_data_dict
 
 def getReditData(res1):
     df_title = pd.DataFrame()
@@ -426,7 +470,7 @@ def getReditData(res1):
             # 'ups':post['data']['ups'],
             # 'downs':post['data']['downs'],
             # 'num_comments':post['data']['num_comments'],
-            # 'created_utc':post['data']['created_utc'], #Check the date
+            'created_utc':post['data']['created_utc'], #Check the date
             # 'subreddit_subscribers':post['data']['subreddit_subscribers'], 
         }, ignore_index = True)
     return df_title
@@ -457,7 +501,6 @@ def getYelpData(result):
             },ignore_index=True)
     return df_reviews
     
-
 def getTwitterData(results):
     df_tweet = pd.DataFrame()
     for post in results['data']:
@@ -488,9 +531,10 @@ def get_processed_data():
     frames = [reddit_df, yelp_df, twitter_df]
     combined_data_df = pd.concat(frames)
 
-    processing(combined_data_df, "all", params['brand'], '')
+    inserted_mongo_doc, inserted_id = processing(combined_data_df, "all", params['brand'], '')
 
-    return {"data":"success sent to database"}
+    return {"message":"success sent to database",
+    "data" :inserted_mongo_doc}
 
 @app.route('/get_processed_data_twitter/')
 def get_processed_data_twitter():
@@ -501,8 +545,9 @@ def get_processed_data_twitter():
     # data_twitter = requests.get("http://127.0.0.1:5000/getreviews_twitter?query=" + params["brand"] + "&tweet.fields=author_id&max_results=10")
     data_twitter = get_reviews_twitter(params['brand'])
     twitter_df = getTwitterData(data_twitter)
-    processing(twitter_df, "twitter", params['brand'], '')
-    return {"data":"Twitter proccesing completed. Successly sent to database"}
+    inserted_mongo_doc, inserted_id = processing(twitter_df, "twitter", params['brand'], '')
+    return {"message":"Twitter proccesing completed. Successly sent to database",
+    "data" : inserted_mongo_doc}
 
 @app.route('/get_processed_data_yelp/')
 def get_processed_data_yelp():
@@ -513,9 +558,10 @@ def get_processed_data_yelp():
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
     data_yelp = get_reviews_yelp(params)
     yelp_df = getYelpData(data_yelp)
-    insert_id = processing(yelp_df, "yelp", params['brand'], params['location'])
-    get_yelp_choropleth_map(yelp_df, insert_id)
-    return {"data":"Yelp proccesing completed. Successly sent to database"}
+    inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], params['location'])
+    return {"message":"Yelp proccesing completed. Successly sent to database",
+    "data": inserted_mongo_doc
+    }
 
 @app.route('/get_processed_data_reddit/')
 def get_processed_data_reddit():
@@ -526,8 +572,9 @@ def get_processed_data_reddit():
     # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?limitval=36")
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
-    processing(reddit_df, "reddit", params['brand'], '')
-    return {"data":"Twitter proccesing completed. Successly sent to database"}
+    inserted_mongo_doc, inserted_id = processing(reddit_df, "reddit", params['brand'], '')
+    return {"message":"Twitter proccesing completed. Successly sent to database",
+    "data" : inserted_mongo_doc}
 
 # @app.route('/getreviews_reddit/')
 def get_reddit_reviews(params):
@@ -550,8 +597,6 @@ def get_reddit_reviews(params):
     # except Exception as ex:
     #     print(ex)
     # return {"data":"success sent to database"} 
-
-    
 
 
 # @app.route('/getreviews_yelp/')
