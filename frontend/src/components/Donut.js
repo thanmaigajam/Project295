@@ -16,7 +16,7 @@ function preventDefault(event) {
 
 function CircularIndeterminate() {
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', textAlign : 'center' }}>
       <CircularProgress> Please Wait...</CircularProgress>
     </Box>
   );

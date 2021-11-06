@@ -2,7 +2,25 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
-
+import MuiDrawer from "@mui/material/Drawer";
+import Box from "@mui/material/Box";
+import MuiAppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import TopicRating from "./TopicRating";
+import Deposits from "./Donut";
+import Orders from "./Orders";
+import Navbar from "./navbar";
+import LineGraph from "./LineGraph";
+import ChoroplethMap from "./ChoroplethMap";
+import Title from "./Title";
 class HomePage extends React.Component {
   constructor(props) {
     super(props);
@@ -35,6 +53,72 @@ class HomePage extends React.Component {
               Reddit Reviews
             </Button>
           </Link>
+
+          <Navbar />
+      <container id="myDiv"></container>
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+              {/* Chart */}
+              <Grid item xs={12} md={4} lg={9}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <TopicRating reviews="all"/>
+                </Paper>
+              </Grid>
+          
+              {/* Recent Deposits */}
+              <Grid item xs={12} md={4} lg={3}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 240,
+                  }}
+                >
+                  <Deposits reviews="all"/>
+                </Paper>
+              </Grid>
+              {/* Recent Orders */}
+              <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                  }}
+                >
+                  <Orders reviews="all"/>
+                </Paper>
+              </Grid>
+
+
+            
+       
+           
+
+          
+
+            <Grid item xs={12}>
+                <Paper
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    
+                  }}
+                >
+                  <LineGraph reviews="all"/>
+                </Paper>
+              </Grid>
+            </Grid>
+            </Container>
         </div>
       
       </React.Fragment>
