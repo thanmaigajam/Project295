@@ -37,6 +37,9 @@ export default function Login() {
           console.log("reulst login", response.data);
 
           localStorage.setItem("brand", response.data.brandname);
+          if (localStorage.getItem("brand")) {
+            window.location.href = "/homepage";
+          }
         });
         // if(localStorage.getItem('brand'))
         // {
@@ -46,9 +49,7 @@ export default function Login() {
       .catch((e) => alert(e.message))
       .finally(() => {
         setLoading(false);
-        if (localStorage.getItem("brand")) {
-          window.location.href = "/homepage";
-        }
+     
       });
 
     setLoading(false);
