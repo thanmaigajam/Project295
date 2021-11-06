@@ -76,16 +76,18 @@ class Orders extends Component {
   }
 
   componentDidMount() {
+    console.log("in top 5 positive and neagative");
     axios
       .get(
-        `${backendServer}/reviews/${this.state.brandname}/${this.state.reviewtype}`
+        `${backendServer}/reviews/get_postive_negative/${this.state.brandname}/${this.state.reviewtype}`
       )
       .then((response) => {
-        console.log("Pro are::", response.data);
+        console.log("aasasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        console.log("Pro are::", response.data.data);
         if (response.data != null) {
           this.setState({
-            negativeSentences: response.data.negativeSentences,
-            positiveSentences: response.data.positiveSentences,
+            negativeSentences: response.data.data.negativeSentences,
+            positiveSentences: response.data.data.positiveSentences,
           });
         }
         console.log("Pro are::", this.state.negativeSentences);

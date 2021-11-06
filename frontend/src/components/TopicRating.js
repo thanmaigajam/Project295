@@ -74,7 +74,7 @@ class TopicRating extends Component {
       return(
 
         <div>
-          <Title>Ratings</Title>
+          <Title>Topic Wise Ratings</Title>
     
           {topicsandratings} 
         </div>

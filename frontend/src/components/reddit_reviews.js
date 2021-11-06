@@ -159,10 +159,7 @@ function Reddit_Reviews() {
 
             
        
-           <div>
-
-        <ChoroplethMap  reviews="reddit" data={datachoropleth}/>
-  </div>
+       
 
             <Grid item xs={12}>
                 <Paper
