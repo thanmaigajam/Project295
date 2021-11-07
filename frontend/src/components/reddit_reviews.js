@@ -21,6 +21,10 @@ import Navbar from "./navbar";
 import LineGraph from "./LineGraph";
 import ChoroplethMap from "./ChoroplethMap";
 import Title from "./Title";
+import {backendServer} from "../webConfig.js"
+import {useEffect} from 'react';
+import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 function Copyright(props) {
   return (
@@ -96,24 +100,47 @@ const datachoropleth = [
   ["OH", 49],
 ];
 
+
+function CircularIndeterminate() {
+  return (
+    <Box sx={{ display: 'flex', textAlign : 'center' }}>
+      <CircularProgress> Please Wait...</CircularProgress>
+    </Box>
+  );
+}
+
 function Reddit_Reviews() {
   const [open, setOpen] = React.useState(true);
-
+  const [loading,setLoading] = React.useState(true);
+  const [data, setData] = React.useState("");
+  const [reviewtype,setReviewtype] = React.useState("reddit");
+  const brandname = localStorage.getItem("brand");
   const [options, series, labels] = React.useState({
     options: {},
     series: [44, 55, 41, 17, 15],
     labels: ["A", "B", "C", "D", "E"],
   });
 
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+
+  useEffect(async () => {
+     await axios(
+      `${backendServer}/reviews/get_topic_rating/${brandname}/${reviewtype}`,
+    ).then((response)=> {
+      setData(response.data.data);
+      console.log("data is",data)
+      setLoading(false)
+    })
+  //  console.log("data in reddit reviews",result.data.data);
+   
+  
+  },[]);
 
   return (
     <div>
       <Navbar />
       <container id="myDiv"></container>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          {loading ? <CircularIndeterminate /> : 
             <Grid container spacing={3}>
               {/* Chart */}
               <Grid item xs={12} md={4} lg={9}>
@@ -125,7 +152,7 @@ function Reddit_Reviews() {
                     height: 240,
                   }}
                 >
-                  <Chart reviews="reddit"/>
+                  <Chart reviews="reddit" reviewdata={data}/>
                 </Paper>
               </Grid>
           
@@ -139,7 +166,7 @@ function Reddit_Reviews() {
                     height: 240,
                   }}
                 >
-                  <Deposits reviews="reddit"/>
+                  <Deposits reviews="reddit" reviewdata={data}/>
                 </Paper>
               </Grid>
               {/* Recent Orders */}
@@ -152,7 +179,7 @@ function Reddit_Reviews() {
                     
                   }}
                 >
-                  <Orders reviews="reddit"/>
+                  <Orders reviews="reddit" reviewdata={data}/>
                 </Paper>
               </Grid>
 
@@ -169,10 +196,11 @@ function Reddit_Reviews() {
                     
                   }}
                 >
-                  <LineGraph reviews="reddit"/>
+                  <LineGraph reviews="reddit" reviewdata={data}/>
                 </Paper>
               </Grid>
             </Grid>
+}
             </Container>
             </div>
         

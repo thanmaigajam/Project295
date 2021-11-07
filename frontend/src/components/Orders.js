@@ -68,35 +68,25 @@ class Orders extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      negativeSentences: [],
-      positiveSentences: [],
+      positiveSentences : [],
       brandname: localStorage.getItem("brand"),
       reviewtype: this.props.reviews,
     };
   }
 
-  componentDidMount() {
-    console.log("in top 5 positive and neagative");
-    axios
-      .get(
-        `${backendServer}/reviews/get_postive_negative/${this.state.brandname}/${this.state.reviewtype}`
-      )
-      .then((response) => {
-        console.log("aasasaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        console.log("Pro are::", response.data.data);
-        if (response.data != null) {
-          this.setState({
-            negativeSentences: response.data.data.negativeSentences,
-            positiveSentences: response.data.data.positiveSentences,
-          });
-        }
-        console.log("Pro are::", this.state.negativeSentences);
-        console.log(this.state.positiveSentences);
-      });
+
+  componentDidMount(){
+    const {positiveSentences,negativeSentences} = this.props.reviewdata;
+    // console.log(positiveSentences,"positive ---->");
+    this.setState({
+      positiveSentences : positiveSentences,
+      negativeSentences : negativeSentences
+    })
+
   }
 
   render() {
-    let positiveSentences = this.state.positiveSentences
+    let psentences = this.state.positiveSentences
       ? this.state.positiveSentences.map((row) => {
           return (
             <React.Fragment>
@@ -116,7 +106,7 @@ class Orders extends Component {
         })
       : "";
 
-    let negativeSentences = this.state.negativeSentences
+    let nsentences = this.state.negativeSentences
       ? this.state.negativeSentences.map((row) => {
           return (
             <React.Fragment>
@@ -143,7 +133,7 @@ class Orders extends Component {
             sx={{ p: 2, display: "flex", flexDirection: "column", height: 300 }}
           >
             <Title>Top 5 Positive Sentences</Title>
-            {positiveSentences}
+            {psentences}
           </Paper>
         </Grid>
         <Grid item xs={12}>
@@ -151,11 +141,12 @@ class Orders extends Component {
             sx={{ p: 2, display: "flex", flexDirection: "column", height: 300 }}
           >
             <Title>Top 5 Negative Sentences</Title>
-            {negativeSentences}
+            {nsentences}
           </Paper>
         </Grid>
       </Grid>
     );
+
   }
 }
 export default Orders;

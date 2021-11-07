@@ -1,4 +1,5 @@
 import * as React from "react";
+import {useEffect} from 'react';
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -21,6 +22,10 @@ import Navbar from "./navbar";
 import LineGraph from "./LineGraph";
 import ChoroplethMap from "./ChoroplethMap";
 import Title from "./Title";
+import axios from "axios";
+import {backendServer} from "../webConfig.js"
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 function Copyright(props) {
   return (
@@ -88,34 +93,42 @@ const Drawer = styled(MuiDrawer, {
 
 const mdTheme = createTheme();
 
-const datachoropleth = [
-  ["TX", 75],
-  ["CA", 43],
-  ["VA", 50],
-  ["IL", 88],
-  ["OH", 49],
-];
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [loading,setLoading] = React.useState(true);
+  const [data, setData] = React.useState("");
+  const [reviewtype,setReviewtype] = React.useState("twitter");
+  const brandname = localStorage.getItem("brand");
 
-  const [options, series, labels] = React.useState({
-    options: {},
-    series: [44, 55, 41, 17, 15],
-    labels: ["A", "B", "C", "D", "E"],
-  });
 
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
+  useEffect(async () => {
+    const result = await axios(
+      `${backendServer}/reviews/get_topic_rating/${brandname}/${reviewtype}`,
+    );
+   console.log("data",result.data.data);
+    setData(result.data.data);
+    setLoading(false)
+  },[]);
 
-  
+
+  function CircularIndeterminate() {
+    return (
+      <Box sx={{ display: 'flex', textAlign : 'center' }}>
+        <CircularProgress> Please Wait...</CircularProgress>
+      </Box>
+    );
+  }
+
 
   return (
     <div>
+      
       <Navbar />
       <container id="myDiv"></container>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          {loading ? <CircularIndeterminate /> : 
+         
             <Grid container spacing={3}>
               {/* Chart */}
               <Grid item xs={12} md={4} lg={9}>
@@ -127,7 +140,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <TopicRating reviews="twitter"/>
+                  <TopicRating reviews="twitter" reviewdata={data} />
                 </Paper>
               </Grid>
           
@@ -141,7 +154,7 @@ function DashboardContent() {
                     height: 240,
                   }}
                 >
-                  <Deposits reviews="twitter"/>
+                  <Deposits reviews="twitter"  reviewdata={data} />
                 </Paper>
               </Grid>
               {/* Recent Orders */}
@@ -154,29 +167,12 @@ function DashboardContent() {
                     
                   }}
                 >
-                  <Orders reviews="twitter"/>
+                  <Orders reviews="twitter"  reviewdata={data} />
                 </Paper>
               </Grid>
 
-
-            
-       
-           
-
-          
-
-            <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    
-                  }}
-                >
-                  <LineGraph reviews="twitter"/>
-                </Paper>
-              </Grid>
             </Grid>
+}
             </Container>
             </div>
         

@@ -21,13 +21,56 @@ import Navbar from "./navbar";
 import LineGraph from "./LineGraph";
 import ChoroplethMap from "./ChoroplethMap";
 import Title from "./Title";
+import {backendServer} from "../webConfig.js";
+import CircularProgress from '@mui/material/CircularProgress';
+
+
+function CircularIndeterminate() {
+  return (
+    <Box sx={{ display: 'flex', textAlign : 'center' }}>
+      <CircularProgress> Please Wait...</CircularProgress>
+    </Box>
+  );
+}
+
 class HomePage extends React.Component {
   constructor(props) {
     super(props);
-
+   this.state = {
+     loading : true,
+     data : {},
+     reviewtype : "all",
+     brandname : localStorage.getItem('brand')
+   }
   }
 
+
+  
+ componentDidMount() {
+   console.log("in home page")
+   axios
+     .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
+     .then((response,error) => {
+       console.log("Pro are::", response.data);
+       if(response.data != null)
+       {
+         console.log("rating")
+       this.setState({
+         data : response.data.data,
+         loading : false,
+         
+       });
+       console.log("topicandratings are -------------"+this.state.topicsAndRatings);
+ 
+     }
+      
+     });
+    }
+
+
+
   render() {
+    
     return (
       <React.Fragment>
         <div style = {{marginTop : "100px"}}>
@@ -57,6 +100,7 @@ class HomePage extends React.Component {
           <Navbar />
       <container id="myDiv"></container>
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          {this.state.loading ? <CircularIndeterminate /> : 
             <Grid container spacing={3}>
               {/* Chart */}
               <Grid item xs={12} md={4} lg={9}>
@@ -68,7 +112,7 @@ class HomePage extends React.Component {
                     height: 240,
                   }}
                 >
-                  <TopicRating reviews="all"/>
+                  <TopicRating reviews="all" reviewdata={this.state.data}/>
                 </Paper>
               </Grid>
           
@@ -82,7 +126,7 @@ class HomePage extends React.Component {
                     height: 240,
                   }}
                 >
-                  <Deposits reviews="all"/>
+                  <Deposits reviews="all" reviewdata={this.state.data}/>
                 </Paper>
               </Grid>
               {/* Recent Orders */}
@@ -95,7 +139,7 @@ class HomePage extends React.Component {
                     
                   }}
                 >
-                  <Orders reviews="all"/>
+                  <Orders reviews="all" reviewdata={this.state.data}/>
                 </Paper>
               </Grid>
 
@@ -114,10 +158,10 @@ class HomePage extends React.Component {
                     
                   }}
                 >
-                  <LineGraph reviews="all"/>
+                  <LineGraph reviews="all" reviewdata={this.state.data}/>
                 </Paper>
               </Grid>
-            </Grid>
+            </Grid>}
             </Container>
         </div>
       

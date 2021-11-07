@@ -7,7 +7,6 @@ import { Component } from 'react';
 import { Rating } from '@mui/material';
 import Box from '@mui/material/Box';
 import axios from "axios";
-import {backendServer} from "../webConfig.js"
 
 class TopicRating extends Component {
   constructor(props)
@@ -22,28 +21,37 @@ class TopicRating extends Component {
 
   }
 
-  componentDidMount()
-  {
-    console.log("reviews are from",this.state.reviewtype);
-    axios
-    .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
-    .then((response,error) => {
-      console.log("Pro are::", response.data);
-      if(response.data != null)
-      {
-        console.log("rating")
-      this.setState({
-        topicsAndRatings : response.data.data.topicWiseRatings
-      });
-      console.log("topicandratings are -------------"+this.state.topicsAndRatings);
+componentDidMount(){
+  console.log("in topic rating dddddddddddddd");
+  const {reviewdata} = this.props
+  this.setState({
+          topicsAndRatings : reviewdata.topicWiseRatings
+        });
+  console.log("dataa",this.props);
+}
 
-    }
+  // componentDidMount()
+  // {
+  //   console.log("reviews are from",this.state.reviewtype);
+  //   axios
+  //   .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
+  //   .then((response,error) => {
+  //     console.log("Pro are::", response.data);
+  //     if(response.data != null)
+  //     {
+  //       console.log("rating")
+  //     this.setState({
+  //       topicsAndRatings : response.data.data.topicWiseRatings
+  //     });
+  //     console.log("topicandratings are -------------"+this.state.topicsAndRatings);
+
+  //   }
      
-    });
-    // this.setState({
-    //   topicsAndRatings : null
-    // });
-  }
+  //   });
+  //   // this.setState({
+  //   //   topicsAndRatings : null
+  //   // });
+  // }
 
   render()
   {

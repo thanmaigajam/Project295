@@ -54,28 +54,18 @@ class Donut extends Component {
 
   componentDidMount()
 {
-  this.setState({ loading: true }, () => {
-    axios
-    .get(
-      `${backendServer}/reviews/get_donut/${this.state.brandname}/${this.state.reviewtype}`
-    )
-    .then((response) => {
-      console.log("Pro are::", response.data);
-      if (response.data != null) {
-        this.setState({
-          loading: false,
-          donutSentimentCounts: response.data.data.donutSentimentCounts,
+  console.log("in donut data");
+  const {donutSentimentCounts} = this.props.reviewdata;
+  console.log(donutSentimentCounts)
+  this.setState({
+    loading: false,
+    donutSentimentCounts:donutSentimentCounts,
+  });
+
+ donutSentimentCounts.forEach( element => {
+         this.state.series.push(element.reviewCount);
         });
       }
-      console.log("Sentiment counts are::", this.state.donutSentimentCounts);
-      this.state.donutSentimentCounts.forEach( element => {
-       this.state.series.push(element.reviewCount);
-      });
-    });
-  });
-  console.log("in get donut");
- 
-}
 
   render() {
     const { loading } = this.state;

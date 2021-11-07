@@ -227,6 +227,7 @@ module.exports = {
           console.log("d", d.getDate());
           d = d.getDate();
           if (d - prev > 1) {
+            console.log(d-prev, " d-prev");
             get_flaskend_service(body, (err, results) => {
               if (err) {
                 console.log(err);

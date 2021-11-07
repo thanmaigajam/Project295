@@ -14,6 +14,11 @@ import MuiDrawer from "@mui/material/Drawer";
 import Container from "@mui/material/Container";
 import TopicRating from "./TopicRating";
 import MuiAppBar from "@mui/material/AppBar";
+import {backendServer} from "../webConfig.js"
+import {useEffect} from 'react';
+import axios from "axios";
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from "@mui/material/Box";
 
 
 function Copyright(props) {
@@ -84,22 +89,43 @@ function Copyright(props) {
   function YelpReviews() {
     const [open, setOpen] = React.useState(true);
     const [content, setContent] = useState("");
-
+    const [loading,setLoading] = React.useState(true);
+    const [data, setData] = React.useState("");
+    const [reviewtype,setReviewtype] = React.useState("yelp");
+    const brandname = localStorage.getItem("brand");
     const [options, series, labels] = React.useState({
       options: {},
       series: [44, 55, 41, 17, 15],
       labels: ['A', 'B', 'C', 'D', 'E']
     });
   
-    const toggleDrawer = () => {
-      setOpen(!open);
-    };
-  
+
+    useEffect(async () => {
+      console.log("yelp reviews------------>");
+      const result = await axios(
+        `${backendServer}/reviews/get_topic_rating/${brandname}/${reviewtype}`,
+      );
+     console.log("data",result.data.data);
+      setData(result.data.data);
+      setLoading(false)
+    },[]);
+
+
+    function CircularIndeterminate() {
+      return (
+        <Box sx={{ display: 'flex', textAlign : 'center' }}>
+          <CircularProgress> Please Wait...</CircularProgress>
+        </Box>
+      );
+    }
+
+   
     return (
       <div>
         <Navbar/>
         <container id="myDiv"></container>
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            {loading ? <CircularIndeterminate /> : 
               <Grid container spacing={3}>
                 {/* Chart */}
                 <Grid item xs={12} md={4} lg={9}>
@@ -111,7 +137,7 @@ function Copyright(props) {
                       height: 240,
                     }}
                   >
-                    <TopicRating reviews="yelp"/>
+                    <TopicRating reviews="yelp" reviewdata={data}/>
                   </Paper>
                 </Grid>
             
@@ -125,7 +151,7 @@ function Copyright(props) {
                       height: 240,
                     }}
                   >
-                    <Deposits reviews="yelp" />
+                    <Deposits reviews="yelp" reviewdata={data}/>
                   </Paper>
                 </Grid>
                 {/* Recent Orders */}
@@ -138,7 +164,7 @@ function Copyright(props) {
                       
                     }}
                   >
-                    <Orders reviews="yelp"/>
+                    <Orders reviews="yelp" reviewdata={data}/>
                   </Paper>
                 </Grid>            
   
@@ -150,24 +176,15 @@ function Copyright(props) {
                       height : 500
                     }}
                   >
-      <MapChart reviews="yelp" setTooltipContent={setContent} />
+      <MapChart reviews="yelp" setTooltipContent={setContent} reviewdata={data} />
       <ReactTooltip>{content}</ReactTooltip>
       </Paper>
     </Grid>
          
   
-              <Grid item xs={12}>
-                  <Paper
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      
-                    }}
-                  >
-                    <LineGraph reviews="yelp" />
-                  </Paper>
-                </Grid>
+          
               </Grid>
+  }
               </Container>
               </div>
           
