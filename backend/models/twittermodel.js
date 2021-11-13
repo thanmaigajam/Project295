@@ -5,6 +5,7 @@ var twitterSchema = new Schema({
   _id: { type: Schema.ObjectId, auto: true },
   brand: { type: String, required: true },
   source: { type: String, required: true },
+  state:{type:String,required:false},
   negativeSentences: [{ type: String }],
   positiveSentences: [{ type: String }],
   requestId: { type: String, required: true },

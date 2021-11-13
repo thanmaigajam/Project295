@@ -91,7 +91,7 @@ const MapChart = ({ setTooltipContent }, props) => {
           height: 500,
         }}
       >
-        <Title>Choropleth Map</Title>
+        <Title>Number of Reviews Based on Region</Title>
         <ComposableMap data-tip="" projection="geoAlbersUsa">
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
