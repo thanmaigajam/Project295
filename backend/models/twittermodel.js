@@ -10,7 +10,11 @@ var twitterSchema = new Schema({
   requestId: { type: String, required: true },
   timeStamp: { type: Date, required: true },
   topicWiseRatings: [{ topic: { type: String }, rating: { type: Number } }],
-  // LineGraphPolarityDates : [{negative : [{type: String }], neutral : [{type: String }],  positive : [{type: String }]],
+  LineGraphPolarityDates: [
+    { negative: [{ type: String }] },
+    { neutral: [{ type: String }] },
+    { positive: [{ type: String }] },
+  ],
   donutSentimentCounts: [
     { polarity: { type: Number }, reviewCount: { type: Number } },
   ],

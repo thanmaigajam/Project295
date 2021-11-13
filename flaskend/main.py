@@ -209,14 +209,10 @@ def get_line_graph_polarity_dates_reddit(df_full):
     polarity_pos_utc = df_full.loc[df_full['polarity three'] == 1, 'created_utc'].to_list()
     polarity_neu_utc = df_full.loc[df_full['polarity three'] == 0, 'created_utc'].to_list()
     polarity_neg_utc = df_full.loc[df_full['polarity three'] == -1, 'created_utc'].to_list()
-    polarity_wise_utc_dates = {
-        'positive' : convert_utc_to_date_list(polarity_pos_utc),
-        'neutral': convert_utc_to_date_list(polarity_neu_utc),
-        'negative' : convert_utc_to_date_list(polarity_neg_utc)
-        }
-    # polarity_wise_utc_dates['positive'] = convert_utc_to_date_list(polarity_pos_utc)
-    # polarity_wise_utc_dates['neutral'] = convert_utc_to_date_list(polarity_neu_utc)
-    # polarity_wise_utc_dates['negative'] = convert_utc_to_date_list(polarity_neg_utc)
+    polarity_wise_utc_dates = []
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
     return polarity_wise_utc_dates
 
 
@@ -433,7 +429,8 @@ def processing(df_title, source, brand, location):
             review_data['choroplethData'] = get_yelp_choropleth_map(df_title)
 
     if("reddit" == source):
-        review_data['LineGraphPolarityDates'] = get_line_graph_polarity_dates_reddit(df_full)
+        review_data['LineGraphDataPolarityDates'] = get_line_graph_polarity_dates_reddit(df_full)
+
     mongo_data = copy.deepcopy(review_data)
     insert_id = 0
     try:
@@ -534,7 +531,8 @@ def get_processed_data():
     inserted_mongo_doc, inserted_id = processing(combined_data_df, "all", params['brand'], '')
 
     return {"message":"success sent to database",
-    "data" :inserted_mongo_doc}
+    # "data" :inserted_mongo_doc
+    }
 
 @app.route('/get_processed_data_twitter/')
 def get_processed_data_twitter():
@@ -547,7 +545,8 @@ def get_processed_data_twitter():
     twitter_df = getTwitterData(data_twitter)
     inserted_mongo_doc, inserted_id = processing(twitter_df, "twitter", params['brand'], '')
     return {"message":"Twitter proccesing completed. Successly sent to database",
-    "data" : inserted_mongo_doc}
+    # "data" : inserted_mongo_doc
+    }
 
 @app.route('/get_processed_data_yelp/')
 def get_processed_data_yelp():
@@ -556,11 +555,23 @@ def get_processed_data_yelp():
         'location' : request.args.get('location')
     }
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
+
     data_yelp = get_reviews_yelp(params)
-    yelp_df = getYelpData(data_yelp)
+    
+    locations = ['arizona', 'california', 'newyork', 'chicago', 'texas', 'virginia']
+    frames = []
+    if('unitedstates' == params['location']):
+        for state in locations:
+            params['location'] = state
+            data_yelp = get_reviews_yelp(params)
+            frames.append(getYelpData(data_yelp))
+        yelp_df = pd.concat(frames) 
+    else:
+        data_yelp = get_reviews_yelp(params)
+        yelp_df = getYelpData(data_yelp)
     inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], params['location'])
     return {"message":"Yelp proccesing completed. Successly sent to database",
-    "data": inserted_mongo_doc
+    # "data": inserted_mongo_doc
     }
 
 @app.route('/get_processed_data_reddit/')
@@ -573,8 +584,10 @@ def get_processed_data_reddit():
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
     inserted_mongo_doc, inserted_id = processing(reddit_df, "reddit", params['brand'], '')
-    return {"message":"Twitter proccesing completed. Successly sent to database",
-    "data" : inserted_mongo_doc}
+    result = {"message":"Reddit proccesing completed. Successly sent to database",
+    # "data" : inserted_mongo_doc
+    }
+    return result
 
 # @app.route('/getreviews_reddit/')
 def get_reddit_reviews(params):
@@ -599,8 +612,9 @@ def get_reddit_reviews(params):
     # return {"data":"success sent to database"} 
 
 
-# @app.route('/getreviews_yelp/')
+@app.route('/getreviews_yelp/')
 def get_reviews_yelp(params):
+# def get_reviews_yelp():
     # params = {
     #     'brand' : request.args.get('brand'),
     #     'location' : request.args.get('location')

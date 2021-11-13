@@ -44,7 +44,7 @@ module.exports = {
             return callBack(null, res);
           })
           .catch((ex) => {
-            console.log(ex);
+            console.log("is this the catch", ex);
           });
 
         break;
