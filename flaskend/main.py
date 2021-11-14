@@ -48,7 +48,7 @@ import spacy
 
 # Plotting tools
 import pyLDAvis
-import pyLDAvis.gensim  # don't skip this
+#import pyLDAvis.gensim  #don't skip this
 # import pyLDAvis.gensim_models as gensimvis
 import matplotlib.pyplot as plt
 # %matplotlib inline
@@ -150,7 +150,10 @@ def make_bigrams(texts):
 
 # def make_trigrams(texts):
 #     return [trigram_mod[bigram_mod[doc]] for doc in texts]
-nlp = spacy.load('en', disable=['parser', 'ner'])
+# nlp = spacy.load('en', disable=['parser', 'ner'])
+nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+
+
 def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     texts_out = []
@@ -263,7 +266,8 @@ def processing(df_title, source, brand, location):
 
     start_time = time.time()
 
-    nlp = spacy.load('en', disable=['parser', 'ner'])
+    # nlp = spacy.load('en', disable=['parser', 'ner'])
+    nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
     # # Do lemmatization keeping only noun, adj, vb, adv
     data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
