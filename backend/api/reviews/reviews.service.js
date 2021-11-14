@@ -5,14 +5,14 @@ module.exports = {
     console.log("In topic rating service", body);
     let brand = body.brandname;
     let source = body.reviewtype;
-
+    let location = body.location;
     switch (source) {
       case "yelp":
         axios
           .get(
             "http://127.0.0.1:5000/get_processed_data_yelp?brand=" +
-              brand +
-              "&location=arizona"
+              brand +"&location="+location
+              
           )
           .then((res) => {
             return callBack(null, res);
@@ -44,10 +44,22 @@ module.exports = {
             return callBack(null, res);
           })
           .catch((ex) => {
-            console.log(ex);
+            console.log("is this the catch", ex);
           });
 
         break;
+      
+        case "all":
+          axios
+            .get("http://127.0.0.1:5000/get_processed_data?brand=" + brand+"&location=unitedstates")
+            .then((res) => {
+              return callBack(null, res);
+            })
+            .catch((ex) => {
+              console.log("is this the catch", ex);
+            });
+  
+          break;
     }
   },
 };

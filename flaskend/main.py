@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from flask_restful import Api, Resource, abort, reqparse
 import json
 import time
-from datetime import date
+from datetime import date, datetime
 import certifi
 import copy
 
@@ -212,20 +212,16 @@ def get_line_graph_polarity_dates_reddit(df_full):
     polarity_pos_utc = df_full.loc[df_full['polarity three'] == 1, 'created_utc'].to_list()
     polarity_neu_utc = df_full.loc[df_full['polarity three'] == 0, 'created_utc'].to_list()
     polarity_neg_utc = df_full.loc[df_full['polarity three'] == -1, 'created_utc'].to_list()
-    polarity_wise_utc_dates = {
-        'positive' : convert_utc_to_date_list(polarity_pos_utc),
-        'neutral': convert_utc_to_date_list(polarity_neu_utc),
-        'negative' : convert_utc_to_date_list(polarity_neg_utc)
-        }
-    # polarity_wise_utc_dates['positive'] = convert_utc_to_date_list(polarity_pos_utc)
-    # polarity_wise_utc_dates['neutral'] = convert_utc_to_date_list(polarity_neu_utc)
-    # polarity_wise_utc_dates['negative'] = convert_utc_to_date_list(polarity_neg_utc)
+    polarity_wise_utc_dates = []
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
+    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
     return polarity_wise_utc_dates
 
 
 def processing(df_title, source, brand, location):
-    print("df_title in processing")
-    print(df_title.head())
+    # print("df_title in processing")
+    # print(df_title.head())
     df_title.text[df_title.text.str.match(pat = '(https)|(http)|(www.)',na = False)]
     de_emotext = []
     for text in df_title.text:
@@ -251,9 +247,9 @@ def processing(df_title, source, brand, location):
     trigram_mod = gensim.models.phrases.Phraser(trigram)
 
     # See trigram example
-    print(trigram_mod[bigram_mod[list_sentences_tokenized[0]]])
+    # print(trigram_mod[bigram_mod[list_sentences_tokenized[0]]])
 
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print("--- %s seconds ---" % (time.time() - start_time))
 
     # Remove Stop Words
     data_words_nostops = remove_stopwords(list_sentences_tokenized)
@@ -272,8 +268,8 @@ def processing(df_title, source, brand, location):
     # # Do lemmatization keeping only noun, adj, vb, adv
     data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
 
-    print(data_lemmatized[:1])
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # print(data_lemmatized[:1])
+    # print("--- %s seconds ---" % (time.time() - start_time))
 
     
     list_sentences_lemetised = []
@@ -307,7 +303,7 @@ def processing(df_title, source, brand, location):
                                             per_word_topics=True)
 
     # Print the Keyword in the 10 topics
-    pprint(lda_model.print_topics())
+    # pprint(lda_model.print_topics())
     doc_lda = lda_model[corpus]
 
     mallet_path = 'mallet-2.0.8/bin/mallet' # update this path
@@ -321,7 +317,7 @@ def processing(df_title, source, brand, location):
     # Compute Coherence Score
     coherence_model_ldamallet = CoherenceModel(model=ldamallet, texts=data_lemmatized, dictionary=id2word, coherence='c_v')
     coherence_ldamallet = coherence_model_ldamallet.get_coherence()
-    print('\nCoherence Score: ', coherence_ldamallet)
+    # print('\nCoherence Score: ', coherence_ldamallet)
     # 0- quality of cooking, 1-good appliance, 2-functionalities 3-product design, 5-how likely to recommend
 
     df_topic_sents_keywords = format_topics_sentences(ldamallet, corpus, data_lemmatized)
@@ -331,10 +327,6 @@ def processing(df_title, source, brand, location):
     df_dominant_topic.columns = ['Document_No', 'Dominant_Topic', 'Topic_Perc_Contrib', 'Keywords', 'Text']
 
 
-    # Show
-    # print(50*'*')
-    # print(df_dominant_topic.head())
-    # print(50*'*')
 
     # Prepare sentiment scores for all sentences from text blob
     texblog_senti_scores= []
@@ -346,9 +338,7 @@ def processing(df_title, source, brand, location):
     df_full['topics'] = df_dominant_topic['Dominant_Topic'].astype(float)
     df_full['sentiment_scores'] = np.resize(texblog_senti_scores,len(df_full))
 
-    # print(50*'*')
-    # print(df_full.tail(10))
-    # print(50*'*')
+ 
     texblog_senti_scores
     sentiments_textblob = []
     for each in texblog_senti_scores:
@@ -393,28 +383,23 @@ def processing(df_title, source, brand, location):
             ratings.append(2)
         else: ratings.append(1)
 
-    print("ratings----------------------------------------")
-    print(ratings)
-    print(topics)
+   
     topicWiseRatings = []
     for i in range(len(topics)):
         temp_dict = {}
         temp_dict['topic'] = topics[i]
         temp_dict['rating'] = ratings[i]
         topicWiseRatings.append(temp_dict) 
-    # topicWiseRatings = dict(zip(topics, ratings))
-    # print(50*'*')
-    # print(topicWiseRatings)
-    # print(50*'*')
+    
     Most_positive_sentences = df_full.nlargest(5, 'sentiment_scores')['text']
     for i in range(len(Most_positive_sentences.index)):
         print(i,") ",df_full.iloc[Most_positive_sentences.index[i]]['text'])
-    print("Most_positive_sentences --------------------------", Most_positive_sentences)
+    # print("Most_positive_sentences --------------------------", Most_positive_sentences)
 
     Most_negative_sentences = df_full.nsmallest(5, 'sentiment_scores')['text']
     for i in range(len(Most_negative_sentences.index)):
         print(i,") ",df_full.iloc[Most_negative_sentences.index[i]]['text'])
-    print("Most_negative_sentences --------------------------", Most_negative_sentences)
+    # print("Most_negative_sentences --------------------------", Most_negative_sentences)
 
     # PYMONGO CONNECTION
     client = PyMongo(app,uri = config_data['mongodb_config'], tlsCAFile=certifi.where())
@@ -430,14 +415,16 @@ def processing(df_title, source, brand, location):
     "negativeSentences": Most_negative_sentences.tolist(),
     "positiveSentences": Most_positive_sentences.tolist(),
     "topicWiseRatings": topicWiseRatings,
-    "donutSentimentCounts": donut_sentiment_counts_dict
+    "donutSentimentCounts": donut_sentiment_counts_dict,
+    "time": datetime.now().strftime("%H:%M:%S")
     }
     if("yelp" == source):
             review_data['state'] = location
             review_data['choroplethData'] = get_yelp_choropleth_map(df_title)
 
     if("reddit" == source):
-        review_data['LineGraphPolarityDates'] = get_line_graph_polarity_dates_reddit(df_full)
+        review_data['LineGraphDataPolarityDates'] = get_line_graph_polarity_dates_reddit(df_full)
+
     mongo_data = copy.deepcopy(review_data)
     insert_id = 0
     try:
@@ -492,8 +479,8 @@ def getYelpData(result):
         },ignore_index=True)
     # print(df_ids['id'].shape[0])
     for id_val in range(df_ids['id'].shape[0]):
-        print(df_ids['id'][id_val])
-        print(df_ids['state'][id_val])
+        # print(df_ids['id'][id_val])
+        # print(df_ids['state'][id_val])
         idval = df_ids['id'][id_val]
         time.sleep(1)
         url = 'https://api.yelp.com/v3/businesses/'+idval+'/reviews'
@@ -520,6 +507,8 @@ def get_processed_data():
         'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
+    print("fromget_processed_data : ", params['location'])
+    # print("Entered get_processd_data for", params['brand'], " and ", params['location'])
     # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?brand=" + params["brand"] + "&limitval=36")
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
@@ -537,8 +526,9 @@ def get_processed_data():
 
     inserted_mongo_doc, inserted_id = processing(combined_data_df, "all", params['brand'], '')
 
-    return {"message":"success sent to database",
-    "data" :inserted_mongo_doc}
+    return {"message":"success",
+    # "data" :inserted_mongo_doc
+    }
 
 @app.route('/get_processed_data_twitter/')
 def get_processed_data_twitter():
@@ -550,8 +540,9 @@ def get_processed_data_twitter():
     data_twitter = get_reviews_twitter(params['brand'])
     twitter_df = getTwitterData(data_twitter)
     inserted_mongo_doc, inserted_id = processing(twitter_df, "twitter", params['brand'], '')
-    return {"message":"Twitter proccesing completed. Successly sent to database",
-    "data" : inserted_mongo_doc}
+    return {"message":"success",
+    # "data" : inserted_mongo_doc
+    }
 
 @app.route('/get_processed_data_yelp/')
 def get_processed_data_yelp():
@@ -559,12 +550,26 @@ def get_processed_data_yelp():
         'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
+    param_location = params['location']
+    print("get_processed_data_yelp : ", params['location'])
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
-    data_yelp = get_reviews_yelp(params)
-    yelp_df = getYelpData(data_yelp)
-    inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], params['location'])
-    return {"message":"Yelp proccesing completed. Successly sent to database",
-    "data": inserted_mongo_doc
+
+    # data_yelp = get_reviews_yelp(params)
+    
+    locations = ['arizona', 'california', 'newyork', 'chicago', 'texas', 'virginia']
+    frames = []
+    if('unitedstates' == params['location']):
+        for state in locations:
+            params['location'] = state
+            data_yelp = get_reviews_yelp(params)
+            frames.append(getYelpData(data_yelp))
+        yelp_df = pd.concat(frames) 
+    else:
+        data_yelp = get_reviews_yelp(params)
+        yelp_df = getYelpData(data_yelp)
+    inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], param_location)
+    return {"message":"success",
+    # "data": inserted_mongo_doc
     }
 
 @app.route('/get_processed_data_reddit/')
@@ -577,8 +582,10 @@ def get_processed_data_reddit():
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
     inserted_mongo_doc, inserted_id = processing(reddit_df, "reddit", params['brand'], '')
-    return {"message":"Twitter proccesing completed. Successly sent to database",
-    "data" : inserted_mongo_doc}
+    result = {"message":"success",
+    # "data" : inserted_mongo_doc
+    }
+    return result
 
 # @app.route('/getreviews_reddit/')
 def get_reddit_reviews(params):
@@ -603,12 +610,14 @@ def get_reddit_reviews(params):
     # return {"data":"success sent to database"} 
 
 
-# @app.route('/getreviews_yelp/')
+@app.route('/getreviews_yelp/')
 def get_reviews_yelp(params):
+# def get_reviews_yelp():
     # params = {
     #     'brand' : request.args.get('brand'),
     #     'location' : request.args.get('location')
     # }
+    print("get_reviews_yelp : ", params['location'])
     headers = {
         'Authorization' : 'bearer '+ config_data['yelp']['token']
     }
