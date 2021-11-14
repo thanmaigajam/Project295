@@ -95,7 +95,7 @@ function Copyright(props) {
     
   function YelpReviews() {
     const [open, setOpen] = React.useState(true);
-    const [location, setLocation] = React.useState('united states');
+    const [location, setLocation] = React.useState('unitedstates');
     const [content, setContent] = useState("");
     const [loading,setLoading] = React.useState(true);
     const [data, setData] = React.useState("");
