@@ -40,7 +40,8 @@ class HomePage extends React.Component {
      loading : true,
      data : {},
      reviewtype : "all",
-     brandname : localStorage.getItem('brand')
+     brandname : localStorage.getItem('brand'),
+     location:"unitedstates"
    }
   }
 
@@ -49,7 +50,7 @@ class HomePage extends React.Component {
  componentDidMount() {
    console.log("in home page")
    axios
-     .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
+     .get(`${backendServer}/reviews/get_data_for_yelp/${this.state.brandname}/${this.state.reviewtype}/${this.state.location}`)
      .then((response,error) => {
        console.log("Pro are::", response.data);
        if(response.data != null)
