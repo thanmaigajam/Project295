@@ -503,7 +503,8 @@ def get_processed_data():
         'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
-    print("Entered get_processd_data for", params['brand'], " and ", params['location'])
+    print("fromget_processed_data : ", params['location'])
+    # print("Entered get_processd_data for", params['brand'], " and ", params['location'])
     # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?brand=" + params["brand"] + "&limitval=36")
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
@@ -546,6 +547,7 @@ def get_processed_data_yelp():
         'location' : request.args.get('location')
     }
     param_location = params['location']
+    print("get_processed_data_yelp : ", params['location'])
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
 
     # data_yelp = get_reviews_yelp(params)
@@ -611,6 +613,7 @@ def get_reviews_yelp(params):
     #     'brand' : request.args.get('brand'),
     #     'location' : request.args.get('location')
     # }
+    print("get_reviews_yelp : ", params['location'])
     headers = {
         'Authorization' : 'bearer '+ config_data['yelp']['token']
     }
