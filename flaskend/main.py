@@ -5,7 +5,7 @@ from flask_pymongo import PyMongo
 from flask_restful import Api, Resource, abort, reqparse
 import json
 import time
-from datetime import date
+from datetime import date, datetime
 import certifi
 import copy
 
@@ -411,7 +411,8 @@ def processing(df_title, source, brand, location):
     "negativeSentences": Most_negative_sentences.tolist(),
     "positiveSentences": Most_positive_sentences.tolist(),
     "topicWiseRatings": topicWiseRatings,
-    "donutSentimentCounts": donut_sentiment_counts_dict
+    "donutSentimentCounts": donut_sentiment_counts_dict,
+    "time": datetime.now().strftime("%H:%M:%S")
     }
     if("yelp" == source):
             review_data['state'] = location
@@ -544,9 +545,10 @@ def get_processed_data_yelp():
         'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
+    param_location = params['location']
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
 
-    data_yelp = get_reviews_yelp(params)
+    # data_yelp = get_reviews_yelp(params)
     
     locations = ['arizona', 'california', 'newyork', 'chicago', 'texas', 'virginia']
     frames = []
@@ -559,7 +561,7 @@ def get_processed_data_yelp():
     else:
         data_yelp = get_reviews_yelp(params)
         yelp_df = getYelpData(data_yelp)
-    inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], params['location'])
+    inserted_mongo_doc, inserted_id = processing(yelp_df, "yelp", params['brand'], param_location)
     return {"message":"success",
     # "data": inserted_mongo_doc
     }
