@@ -22,11 +22,12 @@ module.exports = {
               console.log(err);
               return;
             } else {
-              twittermodel.findOne({ brand: brand, source:body.reviewtype,state:location}, (error, results) => {
+              twittermodel.findOne({ brand: text, source:body.reviewtype,state:location}, (error, results) => {
                 if (results) {
+                  console.log("results from yelp",results)
+
                   res.send(results);
                 }
-                res.end();
               });
             }
           });
@@ -46,11 +47,11 @@ module.exports = {
                 console.log(err);
                 return;
               } else {
-                twittermodel.findOne({ brand: brand, source:body.reviewtype,state:location}, (error, results) => {
+                twittermodel.findOne({ brand: text, source:body.reviewtype,state:location}, (error, results) => {
                   if (results) {
+                    console.log("results from yelp",results)
                     res.send(results);
                   }
-                  res.end();
                 });
               }
             });
@@ -91,9 +92,10 @@ module.exports = {
             } else {
               twittermodel.findOne({ brand: text, source:body.reviewtype  }, (error, results) => {
                 if (results) {
+                  console.log("results from yelp",results)
+
                   res.send(results);
                 }
-                res.end();
               });
             }
           });
@@ -115,9 +117,10 @@ module.exports = {
               } else {
                 twittermodel.findOne({ brand: text, source:body.reviewtype  }, (error, results) => {
                   if (results) {
+                    console.log("results from yelp",results)
+
                     res.send(results);
                   }
-                  res.end();
                 });
               }
             });
