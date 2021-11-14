@@ -51,7 +51,7 @@ module.exports = {
       
         case "all":
           axios
-            .get("http://127.0.0.1:5000/get_processed_data?brand=" + brand)
+            .get("http://127.0.0.1:5000/get_processed_data?brand=" + brand+"&location=unitedstates")
             .then((res) => {
               return callBack(null, res);
             })
