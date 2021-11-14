@@ -48,7 +48,7 @@ import spacy
 
 # Plotting tools
 import pyLDAvis
-import pyLDAvis.gensim  # don't skip this
+#import pyLDAvis.gensim  #don't skip this
 # import pyLDAvis.gensim_models as gensimvis
 import matplotlib.pyplot as plt
 # %matplotlib inline
@@ -150,7 +150,10 @@ def make_bigrams(texts):
 
 # def make_trigrams(texts):
 #     return [trigram_mod[bigram_mod[doc]] for doc in texts]
-nlp = spacy.load('en', disable=['parser', 'ner'])
+# nlp = spacy.load('en', disable=['parser', 'ner'])
+nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
+
+
 def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     """https://spacy.io/api/annotation"""
     texts_out = []
@@ -259,7 +262,8 @@ def processing(df_title, source, brand, location):
 
     start_time = time.time()
 
-    nlp = spacy.load('en', disable=['parser', 'ner'])
+    # nlp = spacy.load('en', disable=['parser', 'ner'])
+    nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
     # # Do lemmatization keeping only noun, adj, vb, adv
     data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
@@ -503,7 +507,8 @@ def get_processed_data():
         'brand' : request.args.get('brand'),
         'location' : request.args.get('location')
     }
-    print("Entered get_processd_data for", params['brand'], " and ", params['location'])
+    print("fromget_processed_data : ", params['location'])
+    # print("Entered get_processd_data for", params['brand'], " and ", params['location'])
     # data_reddit = requests.get("http://127.0.0.1:5000/getreviews_reddit?brand=" + params["brand"] + "&limitval=36")
     data_reddit = get_reddit_reviews(params)
     reddit_df = getReditData(data_reddit)
@@ -546,6 +551,7 @@ def get_processed_data_yelp():
         'location' : request.args.get('location')
     }
     param_location = params['location']
+    print("get_processed_data_yelp : ", params['location'])
     # data_yelp = requests.get('http://127.0.0.1:5000/getreviews_yelp?brand='+params['brand']+'&location='+params['location'])
 
     # data_yelp = get_reviews_yelp(params)
@@ -611,6 +617,7 @@ def get_reviews_yelp(params):
     #     'brand' : request.args.get('brand'),
     #     'location' : request.args.get('location')
     # }
+    print("get_reviews_yelp : ", params['location'])
     headers = {
         'Authorization' : 'bearer '+ config_data['yelp']['token']
     }
