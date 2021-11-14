@@ -78,21 +78,21 @@ class LineGraph extends Component {
           },
         },
         xaxis: {
-          categories: [],
+          categories: [""],
         },
         tooltip: {
           y: [
             {
               title: {
                 formatter: function (val) {
-                  return val + " (mins)";
+                  return val;
                 },
               },
             },
             {
               title: {
                 formatter: function (val) {
-                  return val + " per session";
+                  return val;
                 },
               },
             },
@@ -153,19 +153,13 @@ class LineGraph extends Component {
     var a3 = [];
     for(const k in d){
       this.state.options["xaxis"]["categories"].push(k);
-    
-      a1.push(d[k][0]);
-     a2.push(d[k][1]);
-     a3.push(d[k][2]);
+      this.state.series[0].data.push(d[k][0]);
+      this.state.series[1].data.push(d[k][1]);
+      this.state.series[2].data.push(d[k][2]);
     }
-    console.log( this.state.options["xaxis"]["categories"])
+    console.log( "options-xaxis-categories",this.state.options["xaxis"]["categories"])
     console.log(a1,a2,a3)
-
-      this.state.series[0].data.push(a1);
-      this.state.series[1].data.push(a2);
-      this.state.series[2].data.push(a3);
- 
-      console.log(this.state.series);
+    console.log(this.state.series);
   }
 
 
