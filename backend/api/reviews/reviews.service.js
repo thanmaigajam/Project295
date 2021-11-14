@@ -48,6 +48,18 @@ module.exports = {
           });
 
         break;
+      
+        case "all":
+          axios
+            .get("http://127.0.0.1:5000/get_processed_data?brand=" + brand)
+            .then((res) => {
+              return callBack(null, res);
+            })
+            .catch((ex) => {
+              console.log("is this the catch", ex);
+            });
+  
+          break;
     }
   },
 };
