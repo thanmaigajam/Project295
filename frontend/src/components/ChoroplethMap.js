@@ -52,8 +52,8 @@ const MapChart = ({ setTooltipContent }, props) => {
     .then((response) => {
       console.log("Pro are::", response.data);
       if (response.data != null) {
-        console.log("response data",response.data.data.choropleth_data);
-        response.data.data.choropleth_data.forEach(element => {
+        console.log("response data",response.data.choroplethData);
+        response.data.choroplethData.forEach(element => {
           counties.push(element)
         });
       // counties.push(response.data.data.choropleth_data)

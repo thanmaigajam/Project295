@@ -16,6 +16,8 @@ var twitterSchema = new Schema({
     { neutral: [{ type: String }] },
     { positive: [{ type: String }] },
   ],
+  choroplethData:[{ country: [{ type: String }] },
+  { reviewCount: [{ type: Number }] }],
   donutSentimentCounts: [
     { polarity: { type: Number }, reviewCount: { type: Number } },
   ],
