@@ -233,9 +233,11 @@ module.exports = {
                 console.log(err);
                 return;
               } else {
-                return res.json({
-                  success: 1,
-                  data: results,
+                twittermodel.findOne({ brand: brand, source:body.reviewtype,state:location}, (error, results) => {
+                  if (results) {
+                    res.send(results);
+                  }
+                  res.end();
                 });
               }
             });
@@ -296,9 +298,11 @@ module.exports = {
                 console.log(err);
                 return;
               } else {
-                return res.json({
-                  success: 1,
-                  data: results,
+                twittermodel.findOne({ brand: text, source:body.reviewtype  }, (error, results) => {
+                  if (results) {
+                    res.send(results);
+                  }
+                  res.end();
                 });
               }
             });
