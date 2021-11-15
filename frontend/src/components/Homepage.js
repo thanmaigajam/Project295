@@ -151,17 +151,7 @@ class HomePage extends React.Component {
 
           
 
-            <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    
-                  }}
-                >
-                  <LineGraph reviews="all" reviewdata={this.state.data}/>
-                </Paper>
-              </Grid>
+         
             </Grid>}
             </Container>
         </div>
