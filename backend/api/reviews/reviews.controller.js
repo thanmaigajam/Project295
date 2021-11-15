@@ -11,12 +11,13 @@ module.exports = {
     var location = body.location;
     text = text.toLowerCase();
     twittermodel.findOne(
-      { brand: text, source: body.reviewtype, state:location },
+      { brand: text, source: body.reviewtype },
       (error, results) => {
         if (error) {
           console.log(error);
           return;
         } else if (results == null) {
+          console.log("results",results);
           get_flaskend_service(body, (err, results) => {
             if (err) {
               console.log(err);
@@ -137,6 +138,7 @@ module.exports = {
               }
             });
           } else {
+            console.log("returning results on same day");
             return res.json({
               success: 1,
               data: results,

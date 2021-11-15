@@ -3,7 +3,7 @@ var axios = require("axios");
 module.exports = {
   get_flaskend_service: (body, callBack) => {
     console.log("In topic rating service", body);
-    let brand = body.brandname;
+    let brand = body.brandname.toLowerCase();
     let source = body.reviewtype;
     let location = body.location;
     switch (source) {
