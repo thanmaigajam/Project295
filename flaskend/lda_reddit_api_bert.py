@@ -175,8 +175,8 @@ label = label.numpy()
 for i in range(len(pred_sentences)):
   print(pred_sentences[i], ": ----> ", labels[label[i]])
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
 
 
 

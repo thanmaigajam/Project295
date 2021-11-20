@@ -1,4 +1,4 @@
-import pandas as pd
+# import pandas as pd
 import requests
 from flask import Flask,request
 from flask_pymongo import PyMongo
@@ -6,8 +6,10 @@ from flask_restful import Api, Resource, abort, reqparse
 import json
 import time
 from datetime import date, datetime
+import datetime as DT
 import certifi
 import copy
+import pandas as pd
 
 from werkzeug.datastructures import Authorization
 app = Flask(__name__)
@@ -208,20 +210,57 @@ def convert_utc_to_date(time_in_utc):
 def convert_utc_to_date_list(utc_list):
     return [convert_utc_to_date(x) for x in utc_list]
 
+def getDateDicts(dateDict, utc_dates):
+    for date in utc_dates:
+        if(date in dateDict):
+            dateDict[date]+=1
+        else:
+            dateDict[date]=1
+    return dateDict
 def get_line_graph_polarity_dates_reddit(df_full):
+# def get_line_graph_polarity_dates_reddit():
     polarity_pos_utc = df_full.loc[df_full['polarity three'] == 1, 'created_utc'].to_list()
     polarity_neu_utc = df_full.loc[df_full['polarity three'] == 0, 'created_utc'].to_list()
     polarity_neg_utc = df_full.loc[df_full['polarity three'] == -1, 'created_utc'].to_list()
+
+    weekDates = []
+    today = DT.date.today()
+    for i in range(7):
+        week_ago = today - DT.timedelta(days=i)
+        weekDates.append(str(week_ago))
+
+    dateDict0 = {}
+    dateDict1 = {}
+    dateDict2 = {}
+    dateDict0 = getDateDicts(dateDict0, convert_utc_to_date_list(polarity_pos_utc))
+    dateDict1 = getDateDicts(dateDict1, convert_utc_to_date_list(polarity_neu_utc))
+    dateDict2 = getDateDicts(dateDict2, convert_utc_to_date_list(polarity_neg_utc))
+    dataDict0_currDates = []
+    dataDict1_currDates = []
+    dataDict2_currDates = []
+
+    for each in dateDict0:
+        if each in weekDates:
+            dataDict0_currDates.append({each : dateDict0[each]})
+    
+
+    for each in dateDict1:
+        if each in weekDates:
+            dataDict1_currDates.append({each : dateDict1[each]})
+
+
+    for each in dateDict2:
+        if each in weekDates:
+            dataDict2_currDates.append({each : dateDict2[each]})
+
     polarity_wise_utc_dates = []
-    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
-    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
-    polarity_wise_utc_dates.append(convert_utc_to_date_list(polarity_pos_utc))
+    polarity_wise_utc_dates.append(dataDict0_currDates)
+    polarity_wise_utc_dates.append(dataDict1_currDates)
+    polarity_wise_utc_dates.append(dataDict2_currDates)
     return polarity_wise_utc_dates
 
 
 def processing(df_title, source, brand, location):
-    # print("df_title in processing")
-    # print(df_title.head())
     df_title.text[df_title.text.str.match(pat = '(https)|(http)|(www.)',na = False)]
     de_emotext = []
     for text in df_title.text:
@@ -408,7 +447,8 @@ def processing(df_title, source, brand, location):
     # db = client
     # Most_negative_sentences_list = Most_negative_sentences.tolist()
     state = ''
-    review_data = {"brand": brand.lower(),
+    review_data = {
+    "brand": brand.lower(),
     "requestId": "3",
     "source" : source,
     "timeStamp" : str(date.today()),
@@ -428,7 +468,7 @@ def processing(df_title, source, brand, location):
     mongo_data = copy.deepcopy(review_data)
     insert_id = 0
     try:
-        dbresRemove = db.twitterreviews.remove({"source": source})
+        dbresRemove = db.twitterreviews.remove({"source": source, "brand": brand.lower()})
         dbres = db.twitterreviews.insert_one(review_data)
         insert_id = dbres.inserted_id
         # for attr in dir(dbres):
