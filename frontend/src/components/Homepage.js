@@ -50,7 +50,7 @@ class HomePage extends React.Component {
  componentDidMount() {
    console.log("in home page")
    axios
-     .get(`${backendServer}/reviews/get_data_for_yelp/${this.state.brandname}/${this.state.reviewtype}/${this.state.location}`)
+     .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
      .then((response,error) => {
        console.log("Pro are::", response.data);
        if(response.data != null)
