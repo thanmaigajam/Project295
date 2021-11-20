@@ -14,8 +14,8 @@ const firebaseConfig = {
   projectId: "know-your-business",
   storageBucket: "know-your-business.appspot.com",
   messagingSenderId: "173040266126",
-  appId: "1:173040266126:web:e0435886e24a57146dd2df",
-  measurementId: "G-P85B6DT3KK"
+  appId: "1:173040266126:web:31044aab279337a96dd2df",
+  measurementId: "G-K1BKG9C8GR"
 };
 
 initializeApp(firebaseConfig);
