@@ -8,7 +8,7 @@
 /flaskend/node_modules
 /flaskend/config.json
 /flaskend/sample.py
-
+/flaskend/mallet-2.0.8
 
 # testing
 /coverage
