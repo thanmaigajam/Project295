@@ -20,6 +20,18 @@ function CircularIndeterminate() {
   );
 }
 
+
+function formatDate(date){
+
+  var dd = date.getDate();
+  var mm = date.getMonth()+1;
+  var yyyy = date.getFullYear();
+  if(dd<10) {dd='0'+dd}
+  if(mm<10) {mm='0'+mm}
+  date = yyyy+'-'+mm+'-'+dd;
+  return date
+}
+
 class LineGraph extends Component {
 
   constructor(props) {
@@ -27,6 +39,7 @@ class LineGraph extends Component {
     this.state = {
       LineGraphDataPolarityDates : {},
       dates_polarity : {},
+      dates_obj : {},
       series: [
         {
           name: "Positive",
@@ -114,6 +127,14 @@ class LineGraph extends Component {
 
 
    componentDidMount() {
+    var result = [];
+    for (var i=0; i<7; i++) {
+        var d = new Date();
+        d.setDate(d.getDate() - i);
+        this.state.options["xaxis"]["categories"].push( formatDate(d) )
+        this.state.dates_obj[formatDate(d)] = i;
+    }
+console.log(this.state.dates_obj  )
     console.log("in linegraph data");
   const {LineGraphDataPolarityDates} = this.props.reviewdata;
     this.setState({
@@ -122,44 +143,44 @@ class LineGraph extends Component {
     });
 
     console.log(LineGraphDataPolarityDates)
-
-
-
-    var d = {};
-    var a_len = LineGraphDataPolarityDates.length;
-    console.log(a_len);
-    var date_str = '';
-    for(var i=0; i<a_len; i++){
-      var inner_l_len = LineGraphDataPolarityDates[i].length;
-      for(var j=0; j<inner_l_len; j++){
-        date_str = LineGraphDataPolarityDates[i][j];
-        if (date_str in d){
-          d[date_str][i] += 1;
-        }
-        else{
-          d[date_str] = [0, 0, 0];
-          d[date_str][i] = 1;
+    let ans = [[],[],[]];
+  
+for(let i = 0;i<LineGraphDataPolarityDates.length;i++)
+{
+  
+   
+      // console.log(LineGraphDataPolarityDates[i])
+      let arr = LineGraphDataPolarityDates[i];
+      for(let k in arr)
+      {
+        for(let ob in arr[k])
+        {
+          console.log(ob,arr[k][ob])
+          console.log("pos",this.state.dates_obj[ob])
+          this.state.series[i].data[this.state.dates_obj[ob]] =arr[k][ob];
+        console.log(arr[k][ob])
         }
       }
-    }
+    
+}
+console.log("ans",ans)
 
-    console.log(d,"dictionary");
+    console.log(this.state.series);
     
 //     // Building final dict
-    console.log(d);
+    // console.log(d);
   
-    var a1 = [];
-    var a2 = [];
-    var a3 = [];
-    for(const k in d){
-      this.state.options["xaxis"]["categories"].push(k);
-      this.state.series[0].data.push(d[k][0]);
-      this.state.series[1].data.push(d[k][1]);
-      this.state.series[2].data.push(d[k][2]);
-    }
-    console.log( "options-xaxis-categories",this.state.options["xaxis"]["categories"])
-    console.log(a1,a2,a3)
-    console.log(this.state.series);
+    // var a1 = [];
+    // var a2 = [];
+    // var a3 = [];
+    // for(const k in d){
+    //   this.state.options["xaxis"]["categories"].push(k);
+    //   this.state.series[0].data.push(d[k][0]);
+    //   this.state.series[1].data.push(d[k][1]);
+    //   this.state.series[2].data.push(d[k][2]);
+    // }
+    // console.log( "options-xaxis-categories",this.state.options["xaxis"]["categories"])
+    // console.log(a1,a2,a3)
   }
 
 

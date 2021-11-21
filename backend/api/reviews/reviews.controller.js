@@ -11,7 +11,7 @@ module.exports = {
     var location = body.location;
     text = text.toLowerCase();
     twittermodel.findOne(
-      { brand: text, source: body.reviewtype },
+      { brand: text, source: body.reviewtype, state:location },
       (error, results) => {
         if (error) {
           console.log(error);
