@@ -50,7 +50,7 @@ class HomePage extends React.Component {
  componentDidMount() {
    console.log("in home page")
    axios
-     .get(`${backendServer}/reviews/get_data_for_yelp/${this.state.brandname}/${this.state.reviewtype}/${this.state.location}`)
+     .get(`${backendServer}/reviews/get_topic_rating/${this.state.brandname}/${this.state.reviewtype}`)
      .then((response,error) => {
        console.log("Pro are::", response.data);
        if(response.data != null)
@@ -151,17 +151,7 @@ class HomePage extends React.Component {
 
           
 
-            <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    
-                  }}
-                >
-                  <LineGraph reviews="all" reviewdata={this.state.data}/>
-                </Paper>
-              </Grid>
+         
             </Grid>}
             </Container>
         </div>
