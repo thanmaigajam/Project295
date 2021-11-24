@@ -1,3 +1,3 @@
-const backendServer = "http://localhost:8080";
-const frontendServer ="http://localhost:3000";
+const backendServer = "3.128.168.202:3001";
+const frontendServer ="3.128.168.202:3000";
 export {backendServer, frontendServer};
