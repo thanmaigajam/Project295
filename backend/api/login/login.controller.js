@@ -4,7 +4,7 @@ const User = require("../../models/usermodel.js");
 module.exports = {
  
     login: (req, res) => {
-      User.findOne({ email: req.body.email}, (error, result) => {
+      User.findOne({ email: req.params.email}, (error, result) => {
         console.log(req.body)
         console.log("in login")
         if (error) {

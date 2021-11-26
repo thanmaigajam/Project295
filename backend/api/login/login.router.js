@@ -6,6 +6,6 @@ const {
 
 
 
-router.get("/", login);
+router.get("/:email", login);
 
 module.exports = router;
