@@ -6,6 +6,6 @@ const {
 
 
 
-router.post("/", login);
+router.get("/", login);
 
 module.exports = router;

@@ -33,7 +33,7 @@ export default function Login() {
         const data = {
           email: Email,
         };
-        axios.post(`${backendServer}/login/`, data).then((response) => {
+        axios.get(`${backendServer}/login/`, data).then((response) => {
           console.log("reulst login", response.data);
 
           localStorage.setItem("brand", response.data.brandname);
