@@ -2,7 +2,6 @@ const http = require("http");
 var express = require("express");
 var app = express();
 var cors = require("cors");
-app.use(cors({ origin: "https://main.d21inct6v7jw87.amplifyapp.com/3.128.168.202:8080", credentials: true }));
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
