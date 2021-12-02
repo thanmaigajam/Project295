@@ -2,7 +2,6 @@ const twittermodel = require("../../models/twittermodel.js");
 const { get_flaskend_service } = require("./reviews.service");
 
 module.exports = {
- 
   get_data_for_yelp: (req, res) => {
     const body = req.params;
     console.log("in yelp router");
@@ -11,28 +10,31 @@ module.exports = {
     var location = body.location;
     text = text.toLowerCase();
     twittermodel.findOne(
-      { brand: text, source: body.reviewtype, state:location },
+      { brand: text, source: body.reviewtype, state: location },
       (error, results) => {
         if (error) {
           console.log(error);
           return;
         } else if (results == null) {
-          console.log("results",results);
+          console.log("results", results);
           get_flaskend_service(body, (err, results) => {
             if (err) {
               console.log(err);
               return;
             } else {
-              twittermodel.findOne({ brand: text, source:body.reviewtype,state:location}, (error, results) => {
-                if (results) {
-                  console.log("results from yelp",results)
+              twittermodel.findOne(
+                { brand: text, source: body.reviewtype, state: location },
+                (error, results) => {
+                  if (results) {
+                    console.log("results from yelp", results);
 
-                  return res.json({
-                    success: 1,
-                    data: results,
-                  });
+                    return res.json({
+                      success: 1,
+                      data: results,
+                    });
+                  }
                 }
-              });
+              );
             }
           });
         } else if (results) {
@@ -45,21 +47,24 @@ module.exports = {
           console.log("d", d.getDate());
           d = d.getDate();
           if (d - prev > 1) {
-            console.log(d-prev, " d-prev");
+            console.log(d - prev, " d-prev");
             get_flaskend_service(body, (err, results) => {
               if (err) {
                 console.log(err);
                 return;
               } else {
-                twittermodel.findOne({ brand: text, source:body.reviewtype,state:location}, (error, results) => {
-                  if (results) {
-                    console.log("results from yelp",results)
-                    return res.json({
-                      success: 1,
-                      data: results,
-                    });
+                twittermodel.findOne(
+                  { brand: text, source: body.reviewtype, state: location },
+                  (error, results) => {
+                    if (results) {
+                      console.log("results from yelp", results);
+                      return res.json({
+                        success: 1,
+                        data: results,
+                      });
+                    }
                   }
-                });
+                );
               }
             });
           } else {
@@ -74,10 +79,8 @@ module.exports = {
             data: results,
           });
         }
-       
       }
     );
-
   },
 
   get_topic_rating_data: (req, res) => {
@@ -97,16 +100,19 @@ module.exports = {
               console.log(err);
               return;
             } else {
-              twittermodel.findOne({ brand: text, source:body.reviewtype  }, (error, results) => {
-                if (results) {
-                  console.log("results from yelp",results)
+              twittermodel.findOne(
+                { brand: text, source: body.reviewtype },
+                (error, results) => {
+                  if (results) {
+                    console.log("results from yelp", results);
 
-                  return res.json({
-                    success: 1,
-                    data: results,
-                  });
+                    return res.json({
+                      success: 1,
+                      data: results,
+                    });
+                  }
                 }
-              });
+              );
             }
           });
         } else if (results) {
@@ -119,22 +125,25 @@ module.exports = {
           console.log("d", d.getDate());
           d = d.getDate();
           if (d - prev > 1) {
-            console.log(d-prev, " d-prev");
+            console.log(d - prev, " d-prev");
             get_flaskend_service(body, (err, results) => {
               if (err) {
                 console.log(err);
                 return;
               } else {
-                twittermodel.findOne({ brand: text, source:body.reviewtype  }, (error, results) => {
-                  if (results) {
-                    console.log("results from yelp",results)
+                twittermodel.findOne(
+                  { brand: text, source: body.reviewtype },
+                  (error, results) => {
+                    if (results) {
+                      console.log("results from yelp", results);
 
-                    return res.json({
-                      success: 1,
-                      data: results,
-                    });
+                      return res.json({
+                        success: 1,
+                        data: results,
+                      });
+                    }
                   }
-                });
+                );
               }
             });
           } else {
@@ -150,21 +159,24 @@ module.exports = {
             data: results,
           });
         }
-       
       }
     );
   },
 
-
   getchoroplethdata: (req, res) => {
     let brand = req.params.brandname;
+    let loc = req.params.location;
     brand = brand.toLowerCase();
     console.log("get choropleth data - Backend function");
-    twittermodel.findOne({ brand: brand, source: "yelp" }, (error, results) => {
-      if (results) {
-        res.send(results);
+    console.log("location", loc);
+    twittermodel.findOne(
+      { brand: brand, source: "yelp", state: loc },
+      (error, results) => {
+        if (results) {
+          res.send(results);
+        }
+        res.end();
       }
-      res.end();
-    });
+    );
   },
 };

@@ -468,7 +468,10 @@ def processing(df_title, source, brand, location):
     mongo_data = copy.deepcopy(review_data)
     insert_id = 0
     try:
-        dbresRemove = db.twitterreviews.remove({"source": source, "brand": brand.lower()})
+        if("yelp" == source):
+            dbresRemove = db.twitterreviews.remove({"source": source, "brand": brand.lower(), "state": location})
+        else:
+            dbresRemove = db.twitterreviews.remove({"source": source, "brand": brand.lower()})
         dbres = db.twitterreviews.insert_one(review_data)
         insert_id = dbres.inserted_id
         # for attr in dir(dbres):

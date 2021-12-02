@@ -7,7 +7,7 @@ import Title from "./Title";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
-import {backendServer} from "../webConfig.js"
+import { backendServer } from "../webConfig.js";
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3.0.0/states-10m.json";
 //counties - > object
@@ -16,7 +16,6 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3.0.0/states-10m.json";
 //   "Vermont" : 54
 // }
 let counties = [];
-
 
 function get_rate(num) {
   console.log("in func", num);
@@ -31,37 +30,39 @@ function get_rate(num) {
   return ans;
 }
 
-const MapChart = ({ setTooltipContent }, props) => {
+const MapChart = (props) => {
+  const { setTooltipContent } = props;
+  const { state } = props.reviewdata;
+  console.log("state", state);
   let [data, setData] = useState([]);
+  let [location, setLocation] = useState(props.reviewdata.state);
   const [brandname, setBrandname] = useState(localStorage.getItem("brand"));
-  const [ reviewtype, setReviewtype] = useState("yelp");
+  const [reviewtype, setReviewtype] = useState("yelp");
   // https://www.bls.gov/lau/
   // csv("/unemployment-by-county-2017.csv").then((counties) => {
   // setData(counties);
   // console.log(counties);
 
   useEffect(() => {
+    setLocation(props.reviewdata.state);
     // https://www.bls.gov/lau/
     // csv(DataCSV).then((counties) => {
     //   setData(counties);
     // });
     axios
-    .get(
-      `${backendServer}/reviews/get_choropleth/${brandname}`
-    )
-    .then((response) => {
-      console.log("Pro are::", response.data);
-      if (response.data != null) {
-        console.log("response data",response.data.choroplethData);
-        response.data.choroplethData.forEach(element => {
-          counties.push(element)
-        });
-      // counties.push(response.data.data.choropleth_data)
-      }
-      console.log("Pro are::", counties);
-    });
-
-  }, []);
+      .get(`${backendServer}/reviews/get_choropleth/${brandname}/${location}`)
+      .then((response) => {
+        console.log("Pro are::", response.data);
+        if (response.data != null) {
+          console.log("response data", response.data.choroplethData);
+          response.data.choroplethData.forEach((element) => {
+            counties.push(element);
+          });
+          // counties.push(response.data.data.choropleth_data)
+        }
+        console.log("Pro are::", counties);
+      });
+  }, location);
 
   console.log(counties);
   // let temp = []
@@ -96,7 +97,9 @@ const MapChart = ({ setTooltipContent }, props) => {
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map((geo) => {
-                let cur = counties.find((s) => s.country === geo.properties.name);
+                let cur = counties.find(
+                  (s) => s.country === geo.properties.name
+                );
                 return (
                   <Geography
                     key={geo.rsmKey}
@@ -110,15 +113,14 @@ const MapChart = ({ setTooltipContent }, props) => {
                     }}
                     fill={cur ? colorScale(cur.reviewCount) : "#EEE"}
                     style={{
-                    
                       hover: {
                         fill: "#F53",
-                        outline: "none"
+                        outline: "none",
                       },
                       pressed: {
                         fill: "#E42",
-                        outline: "none"
-                      }
+                        outline: "none",
+                      },
                     }}
                   />
                 );
