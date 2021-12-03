@@ -5,8 +5,8 @@ var app = express();
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
-  // res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
-  // res.header("Access-Control-Expose-Headers", "Content-Length");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+  res.header("Access-Control-Expose-Headers", "Content-Length");
   res.header(
     "Access-Control-Allow-Headers",
     "Accept, Authorization, Content-Type, X-Requested-With, Range"
@@ -28,7 +28,6 @@ const mongoose = require("mongoose");
 var options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-
 };
 
 mongoose.connect(mongoDB, options, (err, res) => {
@@ -44,6 +43,5 @@ var reviewsRouter = require("./api/reviews/reviews.router");
 var registerRouter = require("./api/register/register.router");
 var loginRouter = require("./api/login/login.router");
 app.use("/reviews", reviewsRouter);
-app.use("/register",registerRouter);
-app.use("/login",loginRouter);
-
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
