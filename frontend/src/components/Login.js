@@ -34,9 +34,10 @@ export default function Login() {
           email: Email,
         };
         axios.get(`${backendServer}/login/${Email}`).then((response) => {
-          console.log("reulst login", response.data);
+          console.log("result login", response.data);
 
-          localStorage.setItem("brand", response.data.brandname);
+          // localStorage.setItem("brand", response.data.brandname);
+          localStorage.setItem("brand", "Adidas");
           if (localStorage.getItem("brand")) {
             window.location.href = "/homepage";
           }
@@ -49,7 +50,6 @@ export default function Login() {
       .catch((e) => alert(e.message))
       .finally(() => {
         setLoading(false);
-     
       });
 
     setLoading(false);

@@ -124,6 +124,7 @@ module.exports = {
           var d = new Date(); /* midnight in China on April 13th */
           console.log("d", d.getDate());
           d = d.getDate();
+          console.log("d - prev", d - prev);
           if (d - prev > 1) {
             console.log(d - prev, " d-prev");
             get_flaskend_service(body, (err, results) => {
