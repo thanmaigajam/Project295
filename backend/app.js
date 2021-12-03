@@ -21,10 +21,10 @@ app.use(express.json());
 var bodyparser = require("body-parser");
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
-app.use(express.static(__dirname)); //here is important thing - no static directory, because all static :)
-app.get("/*", function (req, res) {
-  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
-});
+// app.use(express.static(__dirname)); //here is important thing - no static directory, because all static :)
+// app.get("/*", function (req, res) {
+//   res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+// });
 var axios = require("axios");
 const port = 3001;
 module.exports = app.listen(port);
