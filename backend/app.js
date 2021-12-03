@@ -9,10 +9,11 @@ app.use(function (req, res, next) {
   // res.header("Access-Control-Expose-Headers", "Content-Length");
   // method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,user'"
   res.header("Access-Control-Expose-Headers", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Accept, Authorization, Content-Type, X-Requested-With, Range, X-Amz-Date, X-Api-Key, X-Amz-Security-Token, user"
-  );
+  // res.header(
+  //   "Access-Control-Allow-Headers",
+  //   "Accept, Authorization, Content-Type, X-Requested-With, Range, X-Amz-Date, X-Api-Key, X-Amz-Security-Token, user"
+  // );
+  res.header("Access-Control-Allow-Headers", "*");
   next();
 });
 app.set("view engine", "ejs");
