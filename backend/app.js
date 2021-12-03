@@ -7,7 +7,7 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
   // res.header("Access-Control-Expose-Headers", "Content-Length");
-  method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,user'"
+  // method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,user'"
   res.header("Access-Control-Expose-Headers", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -22,8 +22,8 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
 app.use(express.static(__dirname)); //here is important thing - no static directory, because all static :)
 app.get("/*", function (req, res) {
-  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-})
+  res.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+});
 var axios = require("axios");
 const port = 3001;
 module.exports = app.listen(port);
