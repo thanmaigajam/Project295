@@ -18,7 +18,7 @@ This module contains the user interface which is designed using React.
 ## Flaskend 
  cd Project295/Flaskend
 ### Install the included libraries in requirements.txt
- pip3 install -r requirements.txt
+ pip3 install -r requirements.txt.  
  python3 main.py
 
 ## Backend
