@@ -1,5 +1,5 @@
 const connectionStrings = {
-    mongoDB :  'mongodb+srv://root:welcome05@cluster0.fhenv.mongodb.net/reviews?retryWrites=true&w=majority'
+  mongoDB: "<ENter your mongo connection string here>",
 };
 
 module.exports = connectionStrings;
