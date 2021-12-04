@@ -1,9 +1,12 @@
 # Project295
 
 # There are 3 modules in the project
-## Backend: This Module contains the API services for our application, which is developed using NodeJS.
-## Flaskend: This module contains the sentiment analysis implementation for the reviews from public APIs
-## Frontend: This module contains the user interface which is designed using React.
+## Backend: 
+This Module contains the API services for our application, which is developed using NodeJS.
+## Flaskend: 
+This module contains the sentiment analysis implementation for the reviews from public APIs
+## Frontend: 
+This module contains the user interface which is designed using React.
 
 ## Prerequisites
 ## Firebase can be used to authenticate the user.
@@ -13,26 +16,26 @@
 ## Steps required to run each module
 
 ## Flaskend 
-### cd Project295/Flaskend
+ cd Project295/Flaskend
 ### Install the included libraries in requirements.txt
-### pip3 install -r requirements.txt
-### python3 main.py
+ pip3 install -r requirements.txt
+ python3 main.py
 
 ## Backend
-### Project295/Backend
+ cd Project295/Backend
 ### Install the required libraries
-### npm install
+ npm install
 
 ### Run Node server on port 8080
-### node app.js
+ node app.js
 
 ## Frontend
-### Project295/Frontend
+  cd Project295/Frontend
 ### Install the required dependencies
-### npm install
+  npm install
 
 ### Run the front end on port 3000
-### npm start
+  npm start
 
 
 
